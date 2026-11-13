@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo 4 · 嵌入民呼我为平台的事项办理侧栏｜浙江省信访局</title>
+<style>
+:root{
+  --ink:#0e1c2e; --ink2:#334a63; --ink3:#6b7f96; --line:#e2e8f0; --line2:#eef2f7;
+  --bg:#eef3f9; --card:#fff; --blue:#123a6b; --blue2:#1f5fa8; --blue3:#e8f0fa;
+  --red:#c8102e; --red3:#fdecee; --green:#1a7f5a; --green3:#e8f6f0; --amber:#a86000; --amber3:#fdf3e3;
+  --ai:#6b3fa0; --ai2:#8b5fc0; --ai3:#f3eefb;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,sans-serif;
+  background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.topbar{height:56px;background:var(--blue);color:#fff;display:flex;align-items:center;gap:14px;padding:0 20px;
+  position:sticky;top:0;z-index:60}
+.topbar .logo{width:26px;height:26px;border-radius:6px;background:#fff;color:var(--blue);display:flex;
+  align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.topbar h1{font-size:15px;margin:0;font-weight:600;white-space:nowrap}
+.topbar .sub{font-size:12px;opacity:.72;border-left:1px solid rgba(255,255,255,.28);padding-left:14px}
+.topbar .spacer{flex:1}
+.tag-demo{font-size:11px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);
+  padding:3px 9px;border-radius:20px;white-space:nowrap}
+
+.intro{max-width:1440px;margin:0 auto;padding:22px 20px 0}
+.intro h2{margin:0 0 6px;font-size:20px}
+.intro p{margin:0 0 8px;color:var(--ink2);font-size:13px}
+.intro .note{background:#fff;border:1px solid var(--line);border-left:3px solid var(--ai);border-radius:0 9px 9px 0;
+  padding:9px 13px;font-size:12px;color:var(--ink2);line-height:1.7;margin-bottom:14px}
+.intro .note b{color:var(--ai)}
+
+/* 模拟业务系统窗口 */
+.osshell{max-width:1440px;margin:0 auto 30px;padding:0 20px}
+.oschrome{background:#fff;border:1px solid #cfd9e4;border-radius:12px;overflow:hidden;
+  box-shadow:0 6px 24px rgba(16,40,70,.10)}
+.osbar{height:38px;background:#f5f8fb;border-bottom:1px solid #dde6ef;display:flex;align-items:center;gap:9px;
+  padding:0 12px;font-size:11.5px;color:var(--ink3)}
+.dot{width:9px;height:9px;border-radius:50%}
+.osbar .url{flex:1;background:#fff;border:1px solid #e3eaf2;border-radius:6px;padding:3px 9px;font-size:11px;
+  color:#7d8fa3;font-family:ui-monospace,Menlo,monospace;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.osbar .role{background:#e8f0fa;color:var(--blue2);padding:2px 8px;border-radius:10px;font-size:10.5px;white-space:nowrap}
+
+.layout{display:grid;grid-template-columns:186px minmax(0,1fr) 400px;min-height:780px}
+@media(max-width:1280px){.layout{grid-template-columns:64px minmax(0,1fr) 380px}}
+
+/* 左侧业务菜单 */
+.side{background:#1b2c42;color:#c9d6e5;padding:12px 0;font-size:12.5px}
+.side .org{padding:0 14px 12px;border-bottom:1px solid rgba(255,255,255,.09);margin-bottom:8px}
+.side .org .nm{color:#fff;font-weight:600;font-size:13px}
+.side .org .rl{font-size:10.5px;opacity:.6;margin-top:2px}
+.side .mi{padding:8px 14px;display:flex;align-items:center;gap:9px;cursor:pointer;position:relative;white-space:nowrap;
+  overflow:hidden}
+.side .mi:hover{background:rgba(255,255,255,.07);color:#fff}
+.side .mi.on{background:rgba(31,95,168,.35);color:#fff;box-shadow:inset 3px 0 0 #4d8fd6}
+.side .mi .ic{width:16px;text-align:center;opacity:.85;flex:0 0 auto}
+.side .grp{padding:12px 14px 5px;font-size:10px;opacity:.45;letter-spacing:1px}
+
+/* 中间业务表单 */
+.main{background:#fff;border-right:1px solid #e3eaf2;display:flex;flex-direction:column;min-width:0}
+.mtabs{display:flex;gap:0;border-bottom:1px solid var(--line);padding:0 16px;background:#fafcff;overflow-x:auto}
+.mtabs button{border:0;background:transparent;padding:11px 13px;font-size:12.5px;font-family:inherit;color:var(--ink3);
+  cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+.mtabs button.on{color:var(--blue);border-bottom-color:var(--blue2);font-weight:600}
+.mbody{padding:16px 18px;overflow-y:auto;flex:1;max-height:742px}
+.navline{font-size:11.5px;color:var(--ink3);margin-bottom:12px}
+.navline b{color:var(--blue2);font-weight:500}
+.casehd{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.casehd .no{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:var(--ink3)}
+.casehd h3{margin:2px 0 0;font-size:16px;line-height:1.4}
+.st{font-size:10.5px;padding:2px 8px;border-radius:10px;font-weight:500;white-space:nowrap}
+.st.wait{background:var(--amber3);color:var(--amber)}
+.st.done{background:var(--green3);color:var(--green)}
+.st.risk{background:var(--red3);color:var(--red)}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px 14px}
+@media(max-width:980px){.formgrid{grid-template-columns:1fr}}
+.fld{display:flex;flex-direction:column;gap:3px}
+.fld.full{grid-column:1/-1}
+.fld label{font-size:11.5px;color:var(--ink3)}
+.fld .val{border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:12.5px;background:#fbfdff;
+  min-height:33px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.fld .val.ai-filled{background:#f8f4fd;border-color:#d9c8ef}
+.fld .val textarea{width:100%;border:0;background:transparent;font-family:inherit;font-size:12.5px;resize:vertical;
+  min-height:62px;outline:none;color:var(--ink)}
+.ai-mark{font-size:9.5px;background:var(--ai3);color:var(--ai);border:1px solid #d9c8ef;padding:0 5px;border-radius:7px;
+  font-weight:500;white-space:nowrap}
+.blockmt{margin-top:16px;padding-top:14px;border-top:1px solid var(--line2)}
+.blockmt h4{margin:0 0 9px;font-size:13px;display:flex;align-items:center;gap:7px}
+.blockmt h4 .sq{width:3px;height:13px;background:var(--blue2);border-radius:2px}
+.tl{position:relative;padding-left:17px}
+.tl:before{content:"";position:absolute;left:4.5px;top:5px;bottom:6px;width:1px;background:#dde6ef}
+.tl .it{position:relative;margin-bottom:10px;font-size:12px;color:var(--ink2)}
+.tl .it:before{content:"";position:absolute;left:-16px;top:5px;width:7px;height:7px;border-radius:50%;
+  background:#fff;border:2px solid #b9cfe8}
+.tl .it.done:before{background:var(--green);border-color:var(--green)}
+.tl .it.now:before{background:var(--blue2);border-color:var(--blue2);box-shadow:0 0 0 3px rgba(31,95,168,.16)}
+.tl .it .t{font-weight:600;color:var(--ink);font-size:12px}
+.tl .it .m{font-size:11px;color:var(--ink3);margin-top:1px}
+
+/* 右侧 AI 侧栏 */
+.ai{background:#fbf9fe;border-left:1px solid #e6dcf4;display:flex;flex-direction:column;min-width:0}
+.aihd{padding:10px 13px;background:#fff;border-bottom:1px solid #ece3f7;display:flex;align-items:center;gap:8px}
+.aihd .badge{width:24px;height:24px;border-radius:7px;background:var(--ai);color:#fff;display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:700}
+.aihd .tt{font-size:13px;font-weight:600}
+.aihd .sm{font-size:10px;color:var(--ink3)}
+.aihd .x{margin-left:auto;color:#b3a3c9;font-size:15px;cursor:pointer;line-height:1}
+.aibody{flex:1;overflow-y:auto;padding:12px;max-height:700px}
+.aiinput{border-top:1px solid #ece3f7;background:#fff;padding:9px 11px}
+.aiinput .row{display:flex;gap:7px;align-items:flex-end}
+.aiinput textarea{flex:1;border:1px solid var(--line);border-radius:9px;padding:7px 9px;font-family:inherit;font-size:12.5px;
+  resize:none;height:38px;outline:none}
+.aiinput textarea:focus{border-color:var(--ai2);box-shadow:0 0 0 3px rgba(139,95,192,.10)}
+.sendb{width:34px;height:34px;border-radius:9px;background:var(--ai);color:#fff;border:0;cursor:pointer;font-size:13px}
+.quick{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
+.quick button{border:1px solid #ddd0f0;background:#fff;color:var(--ai);font-size:11px;padding:4px 9px;border-radius:20px;
+  cursor:pointer;font-family:inherit}
+.quick button:hover{background:var(--ai3)}
+.msg{margin-bottom:11px;font-size:12.5px;line-height:1.68}
+.msg .who{font-size:10px;color:var(--ink3);margin-bottom:3px;display:flex;gap:6px;align-items:center}
+.msg .bub{background:#fff;border:1px solid #ece3f7;border-radius:10px;padding:9px 11px}
+.msg.me .bub{background:var(--ai);color:#fff;border-color:var(--ai)}
+.msg.me .who{justify-content:flex-end}
+.msg .bub .hd2{font-weight:600;color:var(--ai);margin-bottom:5px;font-size:12px}
+.msg .bub ul{margin:5px 0 0;padding-left:17px}
+.msg .bub li{margin-bottom:4px}
+.typing{display:flex;gap:3px;padding:3px 0}
+.typing i{width:5px;height:5px;border-radius:50%;background:var(--ai2);animation:bl 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bl{0%,100%{opacity:.25}50%{opacity:1}}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.acts button{border:1px solid #ddd0f0;background:#fff;color:var(--ai);font-size:11px;padding:4px 9px;border-radius:7px;
+  cursor:pointer;font-family:inherit}
+.acts button:hover{background:var(--ai3)}
+.acts button.pri{background:var(--ai);color:#fff;border-color:var(--ai)}
+.card{background:#fff;border:1px solid #ece3f7;border-radius:9px;padding:9px 11px;margin-bottom:8px;font-size:12px}
+.card .t{font-weight:600;margin-bottom:4px;display:flex;gap:6px;align-items:center;font-size:12px}
+.card .d{color:var(--ink2);line-height:1.6;font-size:11.5px}
+.flags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.flag{font-size:10px;padding:1px 6px;border-radius:8px;background:var(--red3);color:var(--red)}
+.flag.ok{background:var(--green3);color:var(--green)}
+.flag.mid{background:var(--amber3);color:var(--amber)}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:#0e1c2e;color:#fff;padding:10px 18px;
+  border-radius:10px;font-size:12.5px;opacity:0;pointer-events:none;transition:.25s;z-index:99}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.foot{max-width:1440px;margin:0 auto;padding:0 20px 40px;color:var(--ink3);font-size:11px;line-height:1.7}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">信</div>
+  <h1>浙江省信访局 · 千问办公 Demo 04</h1>
+  <div class="sub">被集成：民呼我为统一平台事项办理侧栏</div>
+  <div class="spacer"></div>
+  <span class="tag-demo">集成嵌入类</span>
+  <span class="tag-demo">演示数据</span>
+</div>
+
+<div class="intro">
+  <h2>不换系统、不改流程：AI 就长在办理页面右侧</h2>
+  <p>下面这个窗口是模拟的民呼我为统一平台事项办理页（含左侧菜单、中间办理表单、右侧 AI 侧栏）。干部仍在原来的系统里点、原来表单里填，AI 通过侧栏接入，读完当前事项上下文后给判断、给草稿、给提醒。</p>
+  <div class="note">
+    <b>集成方式</b>：以 iframe / 侧栏组件形式嵌入业务系统，通过平台统一身份认证取得当前用户与事项权限；事项要素、办理节点、历史工单以只读接口注入模型上下文；AI 产出经「采纳 / 修改 / 驳回」回写原表单，全程留痕可审计。数据不出政务云。
+  </div>
+</div>
+
+<div class="osshell">
+  <div class="oschrome">
+    <div class="osbar">
+      <span class="dot" style="background:#ff5f57"></span>
+      <span class="dot" style="background:#febc2e"></span>
+      <span class="dot" style="background:#28c840"></span>
+      <div class="url" id="urlBar">https://mhww.zj.gov.cn/case/detail?id=ZJXF2026-0417&from=workbench</div>
+      <span class="role">当前用户：余杭区信访局 · 办理岗 张××</span>
+    </div>
+
+    <div class="layout">
+      <!-- 业务系统左侧菜单 -->
+      <div class="side">
+        <div class="org"><div class="nm">民呼我为统一平台</div><div class="rl">余杭区信访局 · 办理岗</div></div>
+        <div class="mi"><span class="ic">◧</span>工作台</div>
+        <div class="grp">事项办理</div>
+        <div class="mi on"><span class="ic">▤</span>待办事项</div>
+        <div class="mi"><span class="ic">◫</span>我的承办</div>
+        <div class="mi"><span class="ic">◰</span>答复审核</div>
+        <div class="mi"><span class="ic">◱</span>送达管理</div>
+        <div class="grp">分析研判</div>
+        <div class="mi"><span class="ic">◈</span>态势分析</div>
+        <div class="mi"><span class="ic">◉</span>类案库</div>
+        <div class="grp">系统</div>
+        <div class="mi"><span class="ic">⚙</span>权限与日志</div>
+      </div>
+
+      <!-- 中间业务表单 -->
+      <div class="main">
+        <div class="mtabs">
+          <button class="on">事项办理</button>
+          <button>流转记录</button>
+          <button>材料清单</button>
+          <button>关联工单</button>
+          <button>答复文稿</button>
+        </div>
+        <div class="mbody">
+          <div class="navline">待办事项 / <b>杭集访〔2026〕0417号</b> / 事项办理</div>
+
+          <div class="casehd">
+            <div style="flex:1;min-width:240px">
+              <div class="no">杭集访〔2026〕0417号 · 征地补偿 · 受理 2026-03-11</div>
+              <h3>陈某反映征地补偿标准执行不到位</h3>
+            </div>
+            <span class="st wait">办理中</span>
+            <span class="st risk">剩余 12 日</span>
+          </div>
+
+          <div class="formgrid" id="formGrid">
+            <div class="fld"><label>信访人</label><div class="val">陈某　男　68 岁</div></div>
+            <div class="fld"><label>联系电话</label><div class="val">138****6721</div></div>
+            <div class="fld"><label>事项类别</label><div class="val">征地补偿</div></div>
+            <div class="fld"><label>反映渠道</label><div class="val">12345 热线转办（第 4 次同诉）</div></div>
+            <div class="fld full"><label>诉求概述</label>
+              <div class="val">要求按杭政函〔2025〕46 号新标准补发征地补偿差额 8.6 万元，并要求书面答复。</div></div>
+            <div class="fld full"><label>调查情况</label>
+              <div class="val" id="valSurvey" style="align-items:flex-start">
+                <textarea id="taSurvey" placeholder="点击右侧「补齐调查情况」由 AI 起草，或直接手写…"></textarea>
+              </div>
+            </div>
+            <div class="fld full"><label>处理意见</label>
+              <div class="val" id="valOpinion" style="align-items:flex-start">
+                <textarea id="taOpinion" placeholder="点击右侧「生成处理意见」由 AI 起草，或直接手写…"></textarea>
+              </div>
+            </div>
+            <div class="fld"><label>承办单位</label><div class="val">余杭区人民政府</div></div>
+            <div class="fld"><label>经办人</label><div class="val">张××（办理岗）</div></div>
+          </div>
+
+          <div class="blockmt">
+            <h4><span class="sq"></span>办理节点</h4>
+            <div class="tl">
+              <div class="it done"><div class="t">受理登记</div><div class="m">2026-03-11 14:22　余杭区信访局 王××</div></div>
+              <div class="it done"><div class="t">转送承办</div><div class="m">2026-03-12 09:05　转送余杭区人民政府</div></div>
+              <div class="it done"><div class="t">联系核实</div><div class="m">2026-03-16 10:40　电话联系信访人，制作谈话记录</div></div>
+              <div class="it now"><div class="t">调查取证（进行中）</div><div class="m">已调取征收台账、补偿测算表；待补 2025 年标准执行文件依据</div></div>
+              <div class="it"><div class="t">答复送达</div><div class="m">未开始</div></div>
+              <div class="it"><div class="t">归档</div><div class="m">未开始</div></div>
+            </div>
+          </div>
+
+          <div class="blockmt">
+            <h4><span class="sq"></span>关联工单（系统自动发现 3 条同诉）</h4>
+            <table style="width:100%;border-collapse:collapse;font-size:11.5px">
+              <tr style="color:#6b7f96"><td style="padding:5px 6px;border-bottom:1px solid #eef2f7">工单号</td>
+                <td style="padding:5px 6px;border-bottom:1px solid #eef2f7">渠道</td>
+                <td style="padding:5px 6px;border-bottom:1px solid #eef2f7">时间</td>
+                <td style="padding:5px 6px;border-bottom:1px solid #eef2f7">结果</td></tr>
+              <tr><td style="padding:6px;border-bottom:1px solid #f4f7fb;font-family:ui-monospace,Menlo,monospace">RD2026-0231</td>
+                <td style="padding:6px;border-bottom:1px solid #f4f7fb">12345</td><td style="padding:6px;border-bottom:1px solid #f4f7fb">2026-01-08</td>
+                <td style="padding:6px;border-bottom:1px solid #f4f7fb"><span class="st risk" style="font-size:10px">不满意</span></td></tr>
+              <tr><td style="padding:6px;border-bottom:1px solid #f4f7fb;font-family:ui-monospace,Menlo,monospace">RD2026-0394</td>
+                <td style="padding:6px;border-bottom:1px solid #f4f7fb">12345</td><td style="padding:6px;border-bottom:1px solid #f4f7fb">2026-02-19</td>
+                <td style="padding:6px;border-bottom:1px solid #f4f7fb"><span class="st risk" style="font-size:10px">不满意</span></td></tr>
+              <tr><td style="padding:6px;font-family:ui-monospace,Menlo,monospace">RD2026-0511</td>
+                <td style="padding:6px">12345</td><td style="padding:6px">2026-02-28</td>
+                <td style="padding:6px"><span class="st risk" style="font-size:10px">不满意</span></td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧 AI 侧栏 -->
+      <div class="ai">
+        <div class="aihd">
+          <div class="badge">千</div>
+          <div>
+            <div class="tt">千问办公 · 事项助手</div>
+            <div class="sm">已读取当前事项上下文（只读）</div>
+          </div>
+          <span class="x">×</span>
+        </div>
+        <div class="aibody" id="aiBody"></div>
+        <div class="aiinput">
+          <div class="quick" id="quick">
+            <button data-q="sum">事项摘要</button>
+            <button data-q="risk">风险体检</button>
+            <button data-q="draft">起草处理意见</button>
+            <button data-q="law">法条依据</button>
+            <button data-q="similar">相似类案</button>
+          </div>
+          <div class="row">
+            <textarea id="aiText" placeholder="就这个事项问点什么，例如：答复时怎么说理更充分？"></textarea>
+            <button class="sendb" id="btnSend">↑</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="foot">
+  本页面为浙江省信访局「千问办公」演示环境，模拟业务系统界面与事项数据均为虚构，仅用于演示「AI 被集成到现有业务系统」的交互形态。真实部署时通过平台统一身份认证与只读数据接口接入，不复制、不外传业务数据。
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+  function $(id){return document.getElementById(id);}
+  function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+  function toast(m){var t=$("toast");t.textContent=m;t.classList.add("on");
+    clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("on");},1900);}
+
+  var body=$("aiBody");
+  var msgSeq=0;
+
+  function addMsg(who,html,cls){
+    var d=document.createElement("div");
+    d.className="msg"+(cls==="me"?" me":"");
+    d.innerHTML='<div class="who">'+(cls==="me"?"办理岗 张××":"千问办公 · 事项助手")+'</div>'+
+      '<div class="bub">'+html+'</div>';
+    body.appendChild(d); body.scrollTop=body.scrollHeight;
+    return d;
+  }
+  function addTyping(){
+    var d=document.createElement("div");
+    d.className="msg"; d.id="typingMsg";
+    d.innerHTML='<div class="who">千问办公 · 事项助手</div><div class="bub"><div class="typing"><i></i><i></i><i></i></div></div>';
+    body.appendChild(d); body.scrollTop=body.scrollHeight;
+    return d;
+  }
+  function killTyping(){ var t=$("typingMsg"); if(t) t.parentNode.removeChild(t); }
+
+  var ANSWERS={
+    sum:function(){
+      return '<div class="hd2">事项摘要（12 项要素已归并）</div>'+
+        '<div>陈某，68 岁，余杭区某村村民。2024 年 6 月承包地被征收 1.83 亩，主张按 2025 年 3 月调整后的区片综合地价（7.9 万元/亩）核算，与实发（6.2 万元/亩）差额 <b>8.6 万元</b>。</div>'+
+        '<ul><li>核心争议：补偿标准应适用「行为发生时」还是「新标准」</li>'+
+        '<li>诉求 2 项：补发差额（实体）＋ 书面答复（程序）</li>'+
+        '<li>办理进度：调查取证中，已调取征收台账与测算表</li>'+
+        '<li>剩余办理时限：<b>12 日</b>（60 日法定期限内）</li></ul>'+
+        '<div class="acts"><button class="pri" data-act="opinion">据此起草处理意见</button>'+
+        '<button data-act="risk">做风险体检</button></div>';
+    },
+    risk:function(){
+      return '<div class="hd2">风险体检 · 3 项提示</div>'+
+        '<div class="card"><div class="t"><span class="flag">高风险</span>重复信访未并案</div>'+
+        '<div class="d">系统内已有 3 条同诉工单（RD2026-0231/0394/0511），本次为第 4 次。若单独立案办理，将计入重复信访，影响一次性化解率与考核。</div>'+
+        '<div class="acts"><button class="pri" data-act="merge">申请并案办理</button></div></div>'+
+        '<div class="card"><div class="t"><span class="flag mid">中风险</span>诉求未逐项回应</div>'+
+        '<div class="d">「要求书面答复」属程序性诉求，起草答复时须单列回应，否则易被判定「诉求未逐项回应」。</div></div>'+
+        '<div class="card"><div class="t"><span class="flag mid">中风险</span>越级走访倾向</div>'+
+        '<div class="d">谈话记录中出现「这次再没回音就去省里」表述，建议在答复前电话预沟通，并纳入重点关注清单。</div></div>'+
+        '<div class="acts"><button data-act="merge">并案</button><button data-act="addTalk">补充预沟通记录</button></div>';
+    },
+    draft:function(){
+      return '<div class="hd2">处理意见草稿（已按当前事项要素生成）</div>'+
+        '<div style="background:#fbf9fe;border:1px solid #ece3f7;border-radius:8px;padding:9px 11px;font-size:12px;line-height:1.75">'+
+        '根据《土地管理法》第四十八条、《信访工作条例》第三十二条及杭政函〔2025〕46 号规定，经复核：<br>'+
+        '一、补偿标准适用。征收行为发生于 2024 年 6 月，原则上适用行为发生时有效的补偿标准；但杭政函〔2025〕46 号对 2024 年 1 月 1 日后启动的征收项目设置了过渡衔接条款，本案是否适用该衔接条款，需由区级自然资源部门出具书面认定意见。<br>'+
+        '二、处理意见。由余杭区人民政府组织区自然资源分局、属地街道，在 10 个工作日内完成过渡衔接条款适用性认定；认定应予补差的，按新标准重新核算并补发差额；认定不予补差的，须书面向信访人说明理由与依据。<br>'+
+        '三、程序回应。本答复意见书将以书面形式送达信访人，并告知复查、复核途径。</div>'+
+        '<div class="acts"><button class="pri" data-act="applyOpinion">写入「处理意见」</button>'+
+        '<button data-act="law">查看法条全文</button></div>';
+    },
+    law:function(){
+      return '<div class="hd2">法条依据（3 条 · 已核验现行有效）</div>'+
+        '<div class="card"><div class="t">《土地管理法》第四十八条</div><div class="d">征收土地应当给予公平、合理的补偿，保障被征地农民原有生活水平不降低、长远生计有保障。征收农用地的土地补偿费、安置补助费标准由省、自治区、直辖市通过制定公布区片综合地价确定，并至少每三年调整或者重新公布一次。</div>'+
+        '<div class="d" style="margin-top:5px;color:#6b3fa0">→ 本条支持「标准应随调整而更新」的解释方向，但未直接规定衔接方式。</div></div>'+
+        '<div class="card"><div class="t">《信访工作条例》第三十二条</div><div class="d">对信访事项有权处理的机关、单位应当自受理之日起 60 日内办结；情况复杂的可以适当延长，但延长期限不得超过 30 日，并告知信访人延期理由。</div>'+
+        '<div class="d" style="margin-top:5px;color:#6b3fa0">→ 本案剩余 12 日，如需延长须提前书面告知。</div></div>'+
+        '<div class="card"><div class="t">杭政函〔2025〕46 号（市级规范性文件）</div><div class="d">调整市区征收农用地区片综合地价标准，并明确对 2024 年 1 月 1 日后启动但尚未完成补偿结算的项目设置过渡衔接安排。</div>'+
+        '<div class="d" style="margin-top:5px;color:#a86000">→ 建议向区自然资源部门核实本案是否落入过渡衔接范围，这是本案胜负手。</div></div>';
+    },
+    similar:function(){
+      return '<div class="hd2">相似类案（3 件 · 来自类案库）</div>'+
+        '<div class="card"><div class="t">杭集访〔2025〕0733号 <span class="flag ok" style="margin-left:auto">已化解</span></div>'+
+        '<div class="d">同区同批次征收，信访人主张按新标准补差。处理方式：由区政府出具过渡衔接条款适用性认定书，认定适用，补差 6.4 万元，信访人签收满意。</div>'+
+        '<div class="d" style="margin-top:5px;color:#6b3fa0">→ 可作为本案办理路径参照，且该认定书格式可直接复用。</div></div>'+
+        '<div class="card"><div class="t">杭集访〔2025〕0912号 <span class="flag" style="margin-left:auto">已化解</span></div>'+
+        '<div class="d">同类诉求但征收行为发生于 2023 年，认定不适用过渡条款，书面说明理由后信访人申请复查，复查维持。</div>'+
+        '<div class="d" style="margin-top:5px;color:#6b3fa0">→ 说理要点：区分「启动时间」与「结算时间」，可作为不适用情形的论证模板。</div></div>'+
+        '<div class="card"><div class="t">省级类案：行政村留用地指标兑现类 <span class="flag mid" style="margin-left:auto">治理中</span></div>'+
+        '<div class="d">全省 1,284 件，同比 +18.6%，涉及余杭、萧山、义乌。省级已启动口径统一指引编制。</div></div>';
+    },
+    free:function(t){
+      if(/说理|充分|答复怎么写|怎么写/.test(t)){
+        return '<div class="hd2">说理加强建议</div>'+
+          '<div>本案答复要经得起复查复核，建议按「三段式」写：</div>'+
+          '<ul><li><b>事实段</b>：写清征收时间、面积、适用标准、实发金额、差额测算过程，数据须与附件测算表完全一致（这是最容易出错的地方，本案此前就出现过 8.6 与 8.2 不一致）。</li>'+
+          '<li><b>依据段</b>：先引《土地管理法》第四十八条确立「公平合理补偿」原则，再引杭政函〔2025〕46 号过渡条款，说明本案为何适用/不适用，不要只写「依据相关规定」。</li>'+
+          '<li><b>救济段</b>：明确告知 30 日内可申请复查、对复查不服 30 日内可申请复核，并写明受理机关名称与地址。</li></ul>'+
+          '<div class="acts"><button class="pri" data-act="opinion">生成加强说理版处理意见</button></div>';
+      }
+      if(/并案|重复/.test(t)){
+        return '<div class="hd2">并案办理说明</div>'+
+          '<div>已将 RD2026-0231、RD2026-0394、RD2026-0511 三条同诉工单与本案关联，建议以本案为主案办理，其余三条标注「并入主案」，答复时一次性回应全部诉求。</div>'+
+          '<div class="acts"><button class="pri" data-act="merge">确认并案</button></div>';
+      }
+      return '<div class="hd2">已结合当前事项作答</div>'+
+        '<div>我就本案（杭集访〔2026〕0417号 · 征地补偿 · 陈某）理解您的问题是：'+esc(t)+'</div>'+
+        '<div style="margin-top:6px">建议从三个角度入手：一是先确认过渡衔接条款是否适用（这是本案关键），二是确保答复中的金额与附件测算表一致，三是把「书面答复」这项程序诉求单列回应。</div>'+
+        '<div class="acts"><button class="pri" data-act="opinion">起草处理意见</button>'+
+        '<button data-act="risk">风险体检</button><button data-act="similar">看相似类案</button></div>';
+    }
+  };
+
+  function handle(q){
+    addMsg("me",esc(q),"me");
+    var tp=addTyping();
+    setTimeout(function(){
+      killTyping();
+      var html = ANSWERS[q] ? ANSWERS[q]() : ANSWERS.free(q);
+      var d=addMsg("ai",html);
+      bindActs(d);
+    }, 620);
+  }
+
+  function bindActs(scope){
+    Array.prototype.forEach.call(scope.querySelectorAll("button[data-act]"),function(b){
+      b.onclick=function(){
+        var a=b.getAttribute("data-act");
+        if(a==="opinion"||a==="applyOpinion"){
+          var txt="根据《土地管理法》第四十八条、《信访工作条例》第三十二条及杭政函〔2025〕46 号规定，经复核："+
+            "一、补偿标准适用。征收行为发生于 2024 年 6 月，原则上适用行为发生时有效的补偿标准；但杭政函〔2025〕46 号对 2024 年 1 月 1 日后启动的征收项目设置了过渡衔接条款，本案是否适用该衔接条款，需由区级自然资源部门出具书面认定意见。"+
+            "二、处理意见。由余杭区人民政府组织区自然资源分局、属地街道，在 10 个工作日内完成过渡衔接条款适用性认定；认定应予补差的，按新标准重新核算并补发差额；认定不予补差的，须书面向信访人说明理由与依据。"+
+            "三、程序回应。本答复意见书将以书面形式送达信访人，并告知复查、复核途径。";
+          $("taOpinion").value=txt;
+          $("valOpinion").classList.add("ai-filled");
+          if(!$("valOpinion").querySelector(".ai-mark")){
+            var m=document.createElement("span"); m.className="ai-mark"; m.textContent="AI 草稿 · 待人工确认";
+            $("valOpinion").appendChild(m);
+          }
+          toast("已写入「处理意见」，请人工确认后保存");
+          addMsg("ai",'<div class="hd2">已写入表单</div><div>处理意见已填入中间表单对应字段，标记为「AI 草稿 · 待人工确认」。您可以继续编辑，保存时会记录本次采纳操作与操作人。</div>');
+        }
+        if(a==="merge"){
+          toast("已发起并案申请，待审核");
+          addMsg("ai",'<div class="hd2">已发起并案</div><div>并案申请已提交至本局审核岗，审核通过后 3 条同诉工单将合并至本案主案办理。操作已记入日志。</div>');
+        }
+        if(a==="risk"){ handle("risk"); }
+        if(a==="law"){ handle("law"); }
+        if(a==="similar"){ handle("similar"); }
+        if(a==="addTalk"){
+          toast("已生成预沟通记录模板");
+          addMsg("ai",'<div class="hd2">预沟通记录模板</div><div>已生成「答复前电话预沟通记录」模板，含沟通时间、内容要点、信访人态度、下一步安排四项，可直接在材料清单中新增。</div>');
+        }
+      };
+    });
+  }
+
+  var QLABEL={sum:"事项摘要",risk:"风险体检",draft:"起草处理意见",law:"法条依据",similar:"相似类案"};
+  Array.prototype.forEach.call($("quick").querySelectorAll("button"),function(b){
+    b.onclick=function(){
+      var k=b.getAttribute("data-q");
+      addMsg("me",QLABEL[k]||k,"me");
+      var tp=addTyping();
+      setTimeout(function(){
+        killTyping();
+        var d=addMsg("ai",ANSWERS[k]());
+        bindActs(d);
+      },620);
+    };
+  });
+  $("btnSend").onclick=function(){
+    var t=$("aiText").value.trim();
+    if(!t){ toast("请先输入内容"); return; }
+    $("aiText").value=""; handle(t);
+  };
+  $("aiText").addEventListener("keydown",function(e){
+    if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); $("btnSend").click(); }
+  });
+
+  // 打开时自动跑一次摘要
+  setTimeout(function(){
+    var d=addMsg("ai",
+      '<div class="hd2">已接入当前事项</div>'+
+      '<div>已读取：杭集访〔2026〕0417号（征地补偿 · 陈某）、办理节点 4/6、关联同诉工单 3 条、材料清单 7 件。</div>'+
+      '<div style="margin-top:7px">我可以在不离开本页面的前提下帮您：起草调查情况与处理意见、做办理风险体检、查法条与相似类案。所有产出都需要您点「写入」才会回填表单。</div>'+
+      '<div class="acts"><button class="pri" data-act="opinion">先起草处理意见</button>'+
+      '<button data-act="risk">先做风险体检</button></div>');
+    bindActs(d);
+  },300);
+
+  // 表单 tab 切换（视觉）
+  Array.prototype.forEach.call(document.querySelectorAll(".mtabs button"),function(b){
+    b.onclick=function(){
+      Array.prototype.forEach.call(document.querySelectorAll(".mtabs button"),function(x){x.classList.remove("on");});
+      b.classList.add("on");
+      if(b.textContent!=="事项办理") toast("演示版仅实现「事项办理」页签，其余为占位");
+    };
+  });
+  Array.prototype.forEach.call(document.querySelectorAll(".side .mi"),function(m){
+    m.onclick=function(){
+      Array.prototype.forEach.call(document.querySelectorAll(".side .mi"),function(x){x.classList.remove("on");});
+      m.classList.add("on");
+      if(m.textContent.indexOf("待办事项")<0) toast("演示版仅实现「待办事项」菜单，其余为占位");
+    };
+  });
+})();
+</script>
+</body>
+</html>
