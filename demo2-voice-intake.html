@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo 2 · 民呼热线录音多模态理解与诉求结构化｜浙江省信访局</title>
+<style>
+:root{
+  --ink:#0e1c2e; --ink2:#334a63; --ink3:#6b7f96; --line:#e2e8f0; --line2:#eef2f7;
+  --bg:#f4f7fb; --card:#fff; --blue:#123a6b; --blue2:#1f5fa8; --blue3:#e8f0fa;
+  --red:#c8102e; --red3:#fdecee; --green:#1a7f5a; --green3:#e8f6f0; --amber:#a86000; --amber3:#fdf3e3;
+  --purple:#5b3fa8; --purple3:#f0ecfa;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,sans-serif;
+  background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.topbar{height:56px;background:var(--blue);color:#fff;display:flex;align-items:center;gap:14px;padding:0 20px;
+  position:sticky;top:0;z-index:50}
+.topbar .logo{width:26px;height:26px;border-radius:6px;background:#fff;color:var(--blue);display:flex;
+  align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.topbar h1{font-size:15px;margin:0;font-weight:600;white-space:nowrap}
+.topbar .sub{font-size:12px;opacity:.72;border-left:1px solid rgba(255,255,255,.28);padding-left:14px}
+.topbar .spacer{flex:1}
+.tag-demo{font-size:11px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);
+  padding:3px 9px;border-radius:20px;white-space:nowrap}
+.wrap{max-width:1280px;margin:0 auto;padding:18px 20px 50px}
+.hero h2{margin:0 0 6px;font-size:21px}
+.hero p{margin:0;color:var(--ink2);font-size:13px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
+.chip{font-size:11.5px;background:#fff;border:1px solid var(--line);color:var(--ink2);padding:4px 10px;border-radius:20px}
+.chip b{color:var(--blue);font-weight:600}
+.cols{display:grid;grid-template-columns:290px minmax(0,1fr) 330px;gap:14px;align-items:start}
+@media(max-width:1180px){.cols{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:14px}
+.panel>.hd{padding:11px 14px;border-bottom:1px solid var(--line2);display:flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:600}
+.panel>.hd .n{width:18px;height:18px;border-radius:5px;background:var(--blue3);color:var(--blue2);font-size:11px;
+  display:flex;align-items:center;justify-content:center;font-weight:700}
+.panel>.hd .rt{margin-left:auto;font-weight:400;font-size:11.5px;color:var(--ink3)}
+.panel>.bd{padding:12px 14px}
+.muted{color:var(--ink3);font-size:12px}
+.clip{border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-bottom:8px;cursor:pointer;transition:.15s}
+.clip:hover{border-color:#b9cfe8;background:#fbfdff}
+.clip.on{border-color:var(--blue2);background:var(--blue3);box-shadow:inset 3px 0 0 var(--blue2)}
+.clip .t{font-size:12.5px;font-weight:600;line-height:1.4;margin-bottom:3px}
+.clip .m{font-size:11px;color:var(--ink3);font-family:ui-monospace,Menlo,monospace}
+.toggle{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line2);font-size:12.5px}
+.toggle:last-child{border-bottom:0}
+.sw{width:38px;height:21px;border-radius:11px;background:#cbd5e1;position:relative;cursor:pointer;transition:.2s;flex:0 0 auto}
+.sw:after{content:"";position:absolute;width:17px;height:17px;border-radius:50%;background:#fff;top:2px;left:2px;transition:.2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.sw.on{background:var(--blue2)}
+.sw.on:after{left:19px}
+.player{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#fafcff}
+.wave{display:flex;align-items:center;gap:2px;height:56px;margin-bottom:10px;cursor:pointer}
+.wave i{flex:1;background:#c9d8ea;border-radius:1px;transition:.1s;min-height:3px}
+.wave i.p{background:var(--blue2)}
+.wave i.cur{background:var(--red)}
+.controls{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink2)}
+.playbtn{width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;border:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:12px}
+.time{font-family:ui-monospace,Menlo,monospace;font-size:12px}
+.timeline{flex:1;height:6px;background:var(--line2);border-radius:3px;position:relative;cursor:pointer}
+.timeline i{position:absolute;left:0;top:0;bottom:0;background:var(--blue2);border-radius:3px;width:0}
+.speaker{margin-top:12px}
+.spk{display:flex;gap:9px;margin-bottom:9px;align-items:flex-start}
+.spk .av{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;flex:0 0 auto}
+.spk .bd2{flex:1;background:#fff;border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:12.5px;line-height:1.65}
+.spk .nm{font-size:11px;color:var(--ink3);margin-bottom:1px;display:flex;gap:6px;align-items:center}
+.em{margin-top:14px}
+.em svg{width:100%;height:96px;display:block}
+.legend{display:flex;gap:14px;font-size:11px;color:var(--ink3);margin-top:4px}
+.legend span{display:flex;align-items:center;gap:4px}
+.legend i{width:9px;height:3px;border-radius:2px;display:block}
+.field{display:flex;gap:8px;padding:7px 0;border-bottom:1px dashed var(--line2);font-size:12.5px;align-items:flex-start}
+.field:last-child{border-bottom:0}
+.field .k{width:74px;color:var(--ink3);flex:0 0 auto;font-size:12px;padding-top:1px}
+.field .v{flex:1;color:var(--ink);line-height:1.55}
+.field .v.empty{color:#b6c2d0;font-style:normal}
+.badge{font-size:10px;padding:1px 6px;border-radius:8px;background:var(--green3);color:var(--green);font-weight:500;
+  margin-left:6px;vertical-align:middle;white-space:nowrap}
+.badge.warn{background:var(--amber3);color:var(--amber)}
+.badge.high{background:var(--red3);color:var(--red)}
+.btn{border:0;border-radius:9px;padding:9px 14px;font-size:12.5px;font-family:inherit;cursor:pointer;font-weight:500;
+  transition:.15s;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn-p{background:var(--blue);color:#fff}.btn-p:hover{background:#0d2e56}
+.btn-o{background:#fff;border:1px solid var(--line);color:var(--ink2)}.btn-o:hover{border-color:var(--blue2);color:var(--blue2)}
+.btn-block{width:100%}.btn-lg{padding:11px 16px;font-size:13.5px}
+.risk{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:var(--red3);
+  border-left:3px solid var(--red);margin-bottom:10px}
+.risk .lvl{font-size:19px;font-weight:700;color:var(--red);line-height:1;font-family:ui-monospace,Menlo,monospace}
+.risk .txt{font-size:12px;color:#7a1424;line-height:1.5}
+.qc{border:1px solid var(--line);border-radius:9px;padding:9px 10px;margin-bottom:8px;font-size:12px;border-left:3px solid var(--green);background:#fff}
+.qc.bad{border-left-color:var(--red);background:var(--red3)}
+.qc .h{font-weight:600;margin-bottom:2px;display:flex;gap:6px;align-items:center;font-size:12px}
+.qc .d{color:var(--ink2);font-size:11.5px;line-height:1.55}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:#0e1c2e;color:#fff;padding:10px 18px;
+  border-radius:10px;font-size:12.5px;opacity:0;pointer-events:none;transition:.25s;z-index:99}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.foot{max-width:1280px;margin:0 auto;padding:0 20px 40px;color:var(--ink3);font-size:11px;line-height:1.7}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line2);margin-bottom:12px}
+.tabs button{border:0;background:transparent;padding:7px 11px;font-size:12.5px;font-family:inherit;color:var(--ink3);
+  cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button.on{color:var(--blue);border-bottom-color:var(--blue2);font-weight:600}
+.gap{height:10px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">信</div>
+  <h1>浙江省信访局 · 千问办公 Demo 02</h1>
+  <div class="sub">民呼热线录音多模态理解与诉求结构化</div>
+  <div class="spacer"></div>
+  <span class="tag-demo">多模态类</span>
+  <span class="tag-demo">演示数据</span>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <h2>一通 8 分 40 秒的来电，10 秒变成一张可派单的诉求卡</h2>
+    <p>面向 12345 热线受理岗与信访接待岗。录音转写 → 说话人分离 → 方言与专业词校正 → 10 项登记要素自动填表 → 情绪与风险预警 → 答复质检，一条链路上全部打通。</p>
+    <div class="chips">
+      <span class="chip">链路覆盖 <b>5 个环节</b> · 要素 <b>10 项</b></span>
+      <span class="chip">受理录入 <b>6 分钟 → 40 秒</b>（模拟测算）</span>
+      <span class="chip">转人工率参照 <b>2.23%</b>（浙江省民呼我为平台公开口径）</span>
+      <span class="chip">交互点 <b>6 处</b></span>
+    </div>
+  </div>
+
+  <div class="cols">
+
+    <div>
+      <div class="panel">
+        <div class="hd"><span class="n">1</span>选择录音样本</div>
+        <div class="bd" id="clipList"></div>
+      </div>
+
+      <div class="panel">
+        <div class="hd"><span class="n">2</span>识别参数</div>
+        <div class="bd">
+          <div class="toggle"><span>说话人分离（坐席 / 群众）</span><div class="sw on" data-k="spk"></div></div>
+          <div class="toggle"><span>浙江方言增强（吴语 · 瓯语）</span><div class="sw on" data-k="dialect"></div></div>
+          <div class="toggle"><span>信访专业词库（条例条款 / 部门称谓）</span><div class="sw on" data-k="lex"></div></div>
+          <div class="toggle"><span>情绪与风险识别</span><div class="sw on" data-k="emotion"></div></div>
+          <div class="note muted" style="margin-top:10px">关闭专业词库后，可看到「复查复核」「四应四不」等术语被误识别，用于对比演示。</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="hd"><span class="n">3</span>一键产出</div>
+        <div class="bd">
+          <button class="btn btn-p btn-block btn-lg" id="btnRun">开始识别并结构化</button>
+          <div class="gap"></div>
+          <button class="btn btn-o btn-block" id="btnExport">导出诉求登记表（.doc）</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <div class="hd"><span class="n">4</span>录音与转写<span class="rt" id="runHint">未开始</span></div>
+        <div class="bd">
+          <div class="player">
+            <div class="wave" id="wave"></div>
+            <div class="controls">
+              <button class="playbtn" id="btnPlay">▶</button>
+              <span class="time" id="tNow">00:00</span>
+              <div class="timeline" id="tl"><i id="tlBar"></i></div>
+              <span class="time" id="tAll">08:40</span>
+              <span style="font-size:11.5px;color:var(--ink3)">1.0×</span>
+            </div>
+          </div>
+          <div class="speaker" id="speaker"></div>
+          <div class="em" id="emotionBox" style="display:none">
+            <div style="font-size:12px;font-weight:600;margin-bottom:6px">情绪强度曲线（每 20 秒采样）</div>
+            <svg id="emoSvg" viewBox="0 0 600 96" preserveAspectRatio="none"></svg>
+            <div class="legend">
+              <span><i style="background:var(--red)"></i>激动 / 对抗</span>
+              <span><i style="background:var(--amber)"></i>焦虑</span>
+              <span><i style="background:var(--blue2)"></i>平稳</span>
+              <span style="margin-left:auto">峰值出现在 05:40 前后</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="hd"><span class="n">5</span>结构化诉求卡<span class="rt" id="cardHint">待生成</span></div>
+        <div class="bd">
+          <div class="tabs" id="tabs">
+            <button class="on" data-t="base">登记要素</button>
+            <button data-t="claim">诉求拆解</button>
+            <button data-t="law">法律适用建议</button>
+          </div>
+          <div id="tabBase"></div>
+          <div id="tabClaim" style="display:none"></div>
+          <div id="tabLaw" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <div class="hd"><span class="n">6</span>风险预警</div>
+        <div class="bd" id="riskBox">
+          <div class="muted">识别完成后显示情绪与信访风险等级。</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="hd"><span class="n">7</span>答复质检</div>
+        <div class="bd" id="qcBox">
+          <div class="muted">识别完成后，可对比坐席口径与规范口径。</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="foot">
+  本页面为浙江省信访局「千问办公」演示环境。录音为模拟生成，通话内容、姓名、单位均为虚构，不含任何真实群众信息；情绪曲线与风险等级为演示算法输出，不作为实际研判依据。
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+  function $(id){return document.getElementById(id);}
+  function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+  function toast(m){var t=$("toast");t.textContent=m;t.classList.add("on");
+    clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("on");},1900);}
+
+  var CLIPS=[
+    {
+      id:"c1", name:"来电 1｜征地补偿标准争议（余杭）", meta:"08:40 · 普通话夹吴语 · 坐席+群众",
+      dur:520, who:"群众 陈某（68 岁，男）", risk:"高",
+      speaker:[
+        {r:"坐席", c:"blue2", t:"您好，这里是 12345 政务服务便民热线，请问有什么可以帮您？"},
+        {r:"群众", c:"#8a6d3b", t:"我那个地被征掉了，补偿款按老标准给的，差了八万六，我去街道问了三趟都没人给我个准话。我今年六十八了，跑不动了呀。"},
+        {r:"坐席", c:"blue2", t:"您别急，我先帮您登记。请问您反映的是哪个街道、哪一年征收的？"},
+        {r:"群众", c:"#8a6d3b", t:"余杭区，二〇二四年六月，一亩八分三。他们现在就一句话，说征收是二四年的事，按二四年的标准，我说二五年新标准不是出来了吗？"},
+        {r:"坐席", c:"blue2", t:"好的。您主要诉求是要求按新标准补发差额，并要求书面答复，是这样吗？"},
+        {r:"群众", c:"#8a6d3b", t:"对，我要书面的，白纸黑字。前面三次打电话都说不超标、说在研究，我这次要是再没回音，我就去省里。"}
+      ],
+      emotion:[3,3,4,6,5,7,6,8,9,7,5,4],
+      fields:{
+        "信访人":"陈某，男，68 岁，余杭区某街道某村村民",
+        "联系电话":"138****6721（已核实）",
+        "事项类别":"征地补偿",
+        "受理日期":"2026-03-11",
+        "反映渠道":"12345 政务服务便民热线（转信访）",
+        "涉及地区":"杭州市余杭区",
+        "涉及金额":"8.6 万元",
+        "诉求类型":"政策标准适用争议 + 程序性诉求（书面答复）",
+        "紧急程度":"一般（含扬言越级走访）",
+        "历史信访":"近 3 个月内 3 次同诉来电，均未化解"
+      },
+      claims:[
+        {t:"要求按杭政函〔2025〕46 号新标准补发征地补偿差额", k:"实体诉求", s:"明确"},
+        {t:"要求出具书面答复", k:"程序诉求", s:"明确"},
+        {t:"要求说明此前 3 次来电未解决的原因", k:"监督诉求", s:"隐含"}
+      ],
+      laws:[
+        {k:"《土地管理法》第四十八条", d:"征收土地应当给予公平、合理的补偿，保障被征地农民原有生活水平不降低。","fit":"高"},
+        {k:"《信访工作条例》第三十二条", d:"自受理之日起 60 日内办结，情况复杂可延长 30 日。","fit":"高"},
+        {k:"《政府信息公开条例》第二十七条", d:"公民可以申请获取相关政府信息，行政机关应依法答复。","fit":"中"}
+      ],
+      qc:[
+        {ok:false,h:"坐席未做重复信访并案提示",d:"系统已有 3 条同诉工单，坐席未提示并案，易造成「初转重」。"},
+        {ok:false,h:"未告知办理时限",d:"未说明 60 日办结与延期规则，群众对进度预期缺失。"},
+        {ok:true,h:"诉求复述准确",d:"坐席准确复述「按新标准补发差额 + 书面答复」两项诉求。"},
+        {ok:true,h:"情绪安抚到位",d:"使用「您别急，我先帮您登记」等安抚话术，未激化对抗。"}
+      ]
+    },
+    {
+      id:"c2", name:"来电 2｜工伤认定超期与社保补缴（宁波）", meta:"06:12 · 普通话 · 坐席+群众",
+      dur:372, who:"群众 王某（41 岁，男）", risk:"中",
+      speaker:[
+        {r:"坐席", c:"blue2", t:"您好，12345 热线，请讲。"},
+        {r:"群众", c:"#8a6d3b", t:"我去年九月在工地上被砸伤了腿，单位十月才去报工伤，到现在认定书都没下来，我医药费都是自己垫的。"},
+        {r:"坐席", c:"blue2", t:"您单位是什么时候给您申报的？有没有给您受理回执？"},
+        {r:"群众", c:"#8a6d3b", t:"十月二十号报的，回执没有。我还查了社保，单位从二二年三月起就没给我交，三十七个月，一分没交。"},
+        {r:"坐席", c:"blue2", t:"好的，工伤认定和社保补缴这两块我都给您登记，会转人社部门处理。"},
+        {r:"群众", c:"#8a6d3b", t:"我就想知道什么时候能有个结果，别又让我等半年。"}
+      ],
+      emotion:[4,5,5,6,5,4,5,4],
+      fields:{
+        "信访人":"王某，男，41 岁，宁波市海曙区某建设项目工人",
+        "联系电话":"137****3390（已核实）",
+        "事项类别":"劳动社保",
+        "受理日期":"2026-04-02",
+        "反映渠道":"12345 政务服务便民热线（转信访）",
+        "涉及地区":"宁波市海曙区",
+        "涉及金额":"医疗费垫付 3.2 万元 / 社保补缴 37 个月",
+        "诉求类型":"工伤认定督促 + 社保补缴",
+        "紧急程度":"一般（涉及基本生活保障）",
+        "历史信访":"首次来电"
+      },
+      claims:[
+        {t:"督促人社部门尽快作出工伤认定结论", k:"实体诉求", s:"明确"},
+        {t:"责令单位补缴 2022 年 3 月至 2025 年 5 月社保", k:"实体诉求", s:"明确"},
+        {t:"要求告知明确办理时限", k:"程序诉求", s:"明确"}
+      ],
+      laws:[
+        {k:"《工伤保险条例》第二十条", d:"社保行政部门应自受理之日起 60 日内作出工伤认定决定。","fit":"高"},
+        {k:"《社会保险法》第六十三条", d:"用人单位未按时足额缴纳社保费的，由征收机构责令限期缴纳或补足。","fit":"高"},
+        {k:"《信访工作条例》第二十六条", d:"属于法定途径解决的，应告知依照法定程序向有关机关提出。","fit":"中"}
+      ],
+      qc:[
+        {ok:false,h:"未区分法定途径与信访途径",d:"工伤认定属行政确认，应告知可申请人社部门依法办理并对结果申请复议，而非笼统转办。"},
+        {ok:true,h:"两项诉求完整登记",d:"工伤认定与社保补缴均已登记，未遗漏。"},
+        {ok:false,h:"未回应「明确时限」诉求",d:"群众两次追问时限，坐席未给出任何时间节点。"}
+      ]
+    },
+    {
+      id:"c3", name:"来电 3｜园区夜间异味扰民（温州 · 方言）", meta:"05:38 · 瓯语为主 · 坐席+群众",
+      dur:338, who:"群众 李某（代表 12 户）", risk:"高",
+      speaker:[
+        {r:"坐席", c:"blue2", t:"您好，12345，请问您反映什么问题？"},
+        {r:"群众", c:"#8a6d3b", t:"我们小区晚上十点到凌晨两点，一股胶水味，呛得睡不着，小孩子咳嗽。我们十二户人家都闻得到。"},
+        {r:"坐席", c:"blue2", t:"您之前有没有反映过这个情况？"},
+        {r:"群众", c:"#8a6d3b", t:"反映过三次了！每次都说没发现超标，白天来测有什么用？我们是晚上才有味道啊。你们能不能晚上来？"},
+        {r:"坐席", c:"blue2", t:"好的，我帮您登记，转生态环境部门核查。"},
+        {r:"群众", c:"#8a6d3b", t:"我还要他们把测的数据公开出来，整改了没有也要说清楚，不然我们就一直投诉。"}
+      ],
+      emotion:[5,6,7,8,9,8,9,7,6],
+      fields:{
+        "信访人":"李某，代表瓯海区某小区 12 户居民",
+        "联系电话":"139****8812（已核实）",
+        "事项类别":"生态环境",
+        "受理日期":"2026-05-19",
+        "反映渠道":"12345 政务服务便民热线（第 4 次同诉）",
+        "涉及地区":"温州市瓯海区",
+        "涉及金额":"—（无直接金额诉求）",
+        "诉求类型":"污染防治 + 信息公开 + 监督问责",
+        "紧急程度":"较高（群体性、重复投诉、涉健康）",
+        "历史信访":"近 2 个月 3 次同诉，均答复「未发现超标」，群众不满意"
+      },
+      claims:[
+        {t:"对涉气企业开展夜间专项排查", k:"实体诉求", s:"明确"},
+        {t:"对超标排放企业停产整治", k:"实体诉求", s:"明确"},
+        {t:"公开监测数据与整改结果", k:"程序诉求", s:"明确"},
+        {t:"质疑此前答复「未发现超标」的真实性", k:"监督诉求", s:"隐含"}
+      ],
+      laws:[
+        {k:"《大气污染防治法》第八十一条", d:"排放工业废气应采取集中收集处理等措施，严格控制排放。","fit":"高"},
+        {k:"《环境保护法》第五十七条", d:"公民有权向环境保护主管部门举报污染环境行为。","fit":"高"},
+        {k:"《信访工作条例》第三十条", d:"有权处理机关应调查核实并依法作出处理。","fit":"高"}
+      ],
+      qc:[
+        {ok:false,h:"重复信访未并案",d:"系统标记第 4 次同诉，坐席未并案处理，也未提示督办。"},
+        {ok:false,h:"未回应信息公开诉求",d:"群众明确要求公开监测数据，坐席未记录该诉求。"},
+        {ok:true,h:"记录时段关键信息",d:"坐席记录了「22 时至次日 2 时」这一关键时段，为夜间监测提供依据。"},
+        {ok:true,h:"方言识别有效",d:"瓯语口音下「胶水味」「呛」等关键词识别准确，未影响定性。"}
+      ]
+    }
+  ];
+
+  var state={clipId:"c1", opt:{spk:true,dialect:true,lex:true,emotion:true}, ran:false, tab:"base", playing:false, pos:0};
+
+  function cur(){return CLIPS.filter(function(c){return c.id===state.clipId;})[0];}
+
+  function renderClips(){
+    $("clipList").innerHTML=CLIPS.map(function(c){
+      return '<div class="clip'+(c.id===state.clipId?" on":"")+'" data-id="'+c.id+'">'+
+        '<div class="t">'+esc(c.name)+'</div><div class="m">'+esc(c.meta)+'</div></div>';
+    }).join("");
+    Array.prototype.forEach.call(document.querySelectorAll(".clip"),function(el){
+      el.onclick=function(){
+        state.clipId=el.getAttribute("data-id"); state.ran=false; state.pos=0;
+        renderClips(); renderWave(); $("speaker").innerHTML="";
+        $("emotionBox").style.display="none";
+        $("cardHint").textContent="待生成"; $("runHint").textContent="未开始";
+        $("riskBox").innerHTML='<div class="muted">识别完成后显示情绪与信访风险等级。</div>';
+        $("qcBox").innerHTML='<div class="muted">识别完成后，可对比坐席口径与规范口径。</div>';
+        ["tabBase","tabClaim","tabLaw"].forEach(function(id){$(id).innerHTML="";});
+        $("tAll").textContent=fmt(cur().dur);
+        $("tNow").textContent="00:00"; $("tlBar").style.width="0";
+      };
+    });
+  }
+
+  function fmt(s){var m=Math.floor(s/60),x=s%60;return (m<10?"0":"")+m+":"+(x<10?"0":"")+x;}
+
+  function renderWave(){
+    var w=$("wave"); var n=72; var html="";
+    for(var i=0;i<n;i++){
+      var h=20+Math.abs(Math.sin(i*0.9))*60+((i*37)%23);
+      html+='<i style="height:'+Math.min(52,h)+'px"></i>';
+    }
+    w.innerHTML=html;
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll(".sw"),function(sw){
+    sw.onclick=function(){
+      var k=sw.getAttribute("data-k");
+      state.opt[k]=!state.opt[k];
+      sw.classList.toggle("on",state.opt[k]);
+      if(state.ran){ run(true); }
+    };
+  });
+
+  Array.prototype.forEach.call($("tabs").querySelectorAll("button"),function(b){
+    b.onclick=function(){
+      state.tab=b.getAttribute("data-t");
+      Array.prototype.forEach.call($("tabs").querySelectorAll("button"),function(x){x.classList.remove("on");});
+      b.classList.add("on");
+      $("tabBase").style.display=state.tab==="base"?"":"none";
+      $("tabClaim").style.display=state.tab==="claim"?"":"none";
+      $("tabLaw").style.display=state.tab==="law"?"":"none";
+    };
+  });
+
+  function emotionSvg(arr){
+    var w=600,h=96,pad=6; var step=(w-pad*2)/(arr.length-1);
+    var pts=arr.map(function(v,i){
+      var x=pad+i*step, y=h-pad-(v/10)*(h-pad*2);
+      return [x,y];
+    });
+    var path="M"+pts.map(function(p){return p[0].toFixed(1)+","+p[1].toFixed(1);}).join(" L");
+    var area=path+" L"+(w-pad)+","+(h-pad)+" L"+pad+","+(h-pad)+" Z";
+    var peak=arr.indexOf(Math.max.apply(null,arr));
+    var out='<defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0%" stop-color="#c8102e" stop-opacity=".22"/>'+
+      '<stop offset="100%" stop-color="#c8102e" stop-opacity="0"/></linearGradient></defs>'+
+      '<path d="'+area+'" fill="url(#g1)"/>'+
+      '<path d="'+path+'" fill="none" stroke="#c8102e" stroke-width="2" stroke-linejoin="round"/>';
+    pts.forEach(function(p,i){
+      var col = arr[i]>=8?"#c8102e":(arr[i]>=6?"#a86000":"#1f5fa8");
+      out+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+(i===peak?4:2.2)+'" fill="'+col+'"/>';
+    });
+    out+='<line x1="0" y1="'+(h-pad)+'" x2="'+w+'" y2="'+(h-pad)+'" stroke="#e2e8f0"/>';
+    out+='<text x="'+(pts[peak][0])+'" y="'+(pts[peak][1]-8)+'" font-size="10" fill="#c8102e" text-anchor="middle">峰值</text>';
+    return out;
+  }
+
+  function run(silent){
+    var c=cur();
+    state.ran=true;
+    $("runHint").textContent="识别完成 · 用时 9.4 秒（模拟）";
+    $("cardHint").textContent="已生成 · 可回填平台";
+
+    // 转写
+    var spk=c.speaker.map(function(s){
+      var t=s.t;
+      if(!state.opt.lex){
+        t=t.replace("复查复核","插查复该").replace("四应四不","四因不布").replace("民呼我为","民户我为");
+      }
+      if(!state.opt.dialect && c.id==="c3"){
+        t=t.replace("胶水味","浇水味").replace("呛得睡不着","枪得睡不着");
+      }
+      return '<div class="spk"><div class="av" style="background:'+s.c+'">'+s.r+'</div>'+
+        '<div class="bd2"><div class="nm">'+s.r+
+        (state.opt.spk?'<span class="badge">说话人已分离</span>':'')+
+        (state.opt.emotion?'<span class="badge '+(s.r==="群众"?"warn":"")+'">情绪'+(s.r==="群众"?"偏强":"平稳")+'</span>':'')+
+        '</div><pre class="plain" style="font-family:inherit;margin:0;white-space:pre-wrap;word-break:break-word">'+esc(t)+'</pre></div></div>';
+    }).join("");
+    $("speaker").innerHTML=spk;
+
+    // 情绪
+    if(state.opt.emotion){
+      $("emotionBox").style.display="";
+      $("emoSvg").innerHTML=emotionSvg(c.emotion);
+    }else{
+      $("emotionBox").style.display="none";
+    }
+
+    // 登记要素
+    var keys=Object.keys(c.fields);
+    $("tabBase").innerHTML=keys.map(function(k){
+      var v=c.fields[k];
+      return '<div class="field"><div class="k">'+esc(k)+'</div><div class="v">'+esc(v)+
+        '<span class="badge">自动填充</span></div></div>';
+    }).join("")+
+    '<div class="gap"></div><div class="muted" style="font-size:11.5px">共 '+keys.length+
+    ' 项要素已填充，其中 '+(state.opt.lex?"9":"7")+' 项置信度 ≥ 0.95；低置信项需人工确认。</div>';
+
+    $("tabClaim").innerHTML=c.claims.map(function(x,i){
+      return '<div class="field"><div class="k">诉求 '+(i+1)+'</div><div class="v">'+esc(x.t)+
+        '<div style="margin-top:3px"><span class="badge">'+esc(x.k)+'</span>'+
+        '<span class="badge '+(x.s==="明确"?"":"warn")+'">'+esc(x.s)+'</span></div></div></div>';
+    }).join("")+
+    '<div class="gap"></div><div class="muted" style="font-size:11.5px">共拆解 '+c.claims.length+
+    ' 项诉求，明确诉求 '+c.claims.filter(function(x){return x.s==="明确";}).length+
+    ' 项。回复时必须逐项回应，缺项将被判定为「诉求未逐项回应」。</div>';
+
+    $("tabLaw").innerHTML=c.laws.map(function(l){
+      return '<div class="field"><div class="k">'+esc(l.k).slice(0,7)+'…</div><div class="v">'+esc(l.d)+
+        '<div style="margin-top:3px"><span class="badge '+(l.fit==="高"?"":"warn")+'">匹配度 '+l.fit+'</span></div></div></div>';
+    }).join("")+
+    '<div class="gap"></div><div class="muted" style="font-size:11.5px">法条建议仅作辅助，正式引用须经法制审核确认为现行有效版本。</div>';
+
+    // 风险
+    var lv=c.risk;
+    var txt = lv==="高"
+      ? "识别到越级走访表述 + 重复投诉 ≥3 次，建议纳入重点关注清单，5 个工作日内首次回访。"
+      : "识别到办事时限焦虑，无对抗性表述，建议按常规流程办理并在承诺时限前主动告知进度。";
+    $("riskBox").innerHTML='<div class="risk"><div class="lvl">'+lv+'</div><div class="txt">'+esc(txt)+'</div></div>'+
+      '<div class="field"><div class="k">触发信号</div><div class="v">'+
+      (lv==="高"?"「我就去省里」越级表述；「三次没回音」重复未化解":"「别又让我等半年」时限焦虑")+
+      '</div></div>'+
+      '<div class="field"><div class="k">情绪峰值</div><div class="v">'+
+      (state.opt.emotion?"05:40 前后，强度 9/10":"未开启情绪识别")+'</div></div>'+
+      '<div class="field"><div class="k">建议动作</div><div class="v">'+
+      (lv==="高"?"并案办理 + 领导包案 + 书面答复前电话预沟通":"标准转办 + 时限短信告知")+'</div></div>';
+
+    // 质检
+    $("qcBox").innerHTML=c.qc.map(function(q){
+      return '<div class="qc'+(q.ok?"":" bad")+'"><div class="h">'+(q.ok?"✓ ":"! ")+esc(q.h)+
+        '<span class="badge '+(q.ok?"":"high")+'" style="margin-left:auto">'+(q.ok?"合规":"待改进")+'</span></div>'+
+        '<div class="d">'+esc(q.d)+'</div></div>';
+    }).join("")+
+    '<div class="gap"></div><div class="muted" style="font-size:11.5px">质检口径参考《信访工作条例》、浙江省 12345 热线服务规范与信访事项办理质量评查要点。</div>';
+
+    if(!silent) toast("识别完成：转写 "+c.speaker.length+" 段，填充 "+Object.keys(c.fields).length+" 项要素");
+  }
+
+  $("btnRun").onclick=function(){ if(!state.ran) run(false); else run(false); };
+
+  /* 播放模拟 */
+  var timer=null;
+  function tick(){
+    var c=cur();
+    state.pos=Math.min(c.dur, state.pos+2);
+    $("tNow").textContent=fmt(state.pos);
+    $("tlBar").style.width=(state.pos/c.dur*100)+"%";
+    var bars=document.querySelectorAll("#wave i");
+    var upto=Math.floor(bars.length*state.pos/c.dur);
+    Array.prototype.forEach.call(bars,function(b,i){
+      b.classList.toggle("p",i<upto);
+      b.classList.toggle("cur",i===upto);
+    });
+    if(state.pos>=c.dur){ stopPlay(); }
+  }
+  function stopPlay(){ state.playing=false; clearInterval(timer); $("btnPlay").textContent="▶"; }
+  $("btnPlay").onclick=function(){
+    if(state.playing){ stopPlay(); return; }
+    state.playing=true; $("btnPlay").textContent="❚❚";
+    timer=setInterval(tick,110);
+    if(!state.ran) toast("提示：先点「开始识别并结构化」，转写与要素会同步出现");
+  };
+  $("tl").onclick=function(e){
+    var r=$("tl").getBoundingClientRect();
+    var p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
+    state.pos=Math.floor(cur().dur*p); tick();
+  };
+
+  /* 导出 */
+  $("btnExport").onclick=function(){
+    if(!state.ran){ toast("请先执行识别"); return; }
+    var c=cur();
+    var rows=Object.keys(c.fields).map(function(k){
+      return '<tr><td style="border:1px solid #999;padding:6px 8px;width:110px;background:#f7f9fc">'+esc(k)+
+        '</td><td style="border:1px solid #999;padding:6px 8px">'+esc(c.fields[k])+'</td></tr>';
+    }).join("");
+    var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">'+
+      '<head><meta charset="utf-8"><title>信访事项诉求登记表</title>'+
+      '<style>@page{size:A4;margin:2.4cm}body{font-family:"仿宋_GB2312","FangSong",serif;font-size:15pt;line-height:1.7}'+
+      'h1{font-family:"方正小标宋简体","SimSun",serif;font-size:21pt;text-align:center;font-weight:normal;letter-spacing:3px}'+
+      'table{border-collapse:collapse;width:100%;font-size:12pt;margin:14pt 0}'+
+      'p{text-indent:2em;margin:0 0 7pt}</style></head><body>'+
+      '<h1>信访事项诉求登记表</h1>'+
+      '<p style="text-indent:0;text-align:center;font-size:11pt;color:#555">（12345 热线转办 · 自动结构化 · 演示生成）</p>'+
+      '<table>'+rows+'</table>'+
+      '<p style="text-indent:0"><b>诉求拆解</b></p>'+
+      c.claims.map(function(x,i){return '<p>'+(i+1)+'. '+esc(x.t)+'（'+x.k+' / '+x.s+'）</p>';}).join("")+
+      '<p style="text-indent:0"><b>风险提示</b></p><p>'+esc(c.risk)+'级。建议动作：'+
+      (c.risk==="高"?"并案办理 + 领导包案 + 书面答复前电话预沟通":"标准转办 + 时限短信告知")+'。</p>'+
+      '<p style="text-indent:0;margin-top:20pt">受理人：＿＿＿＿　　审核人：＿＿＿＿　　日期：2026 年 5 月 19 日</p>'+
+      '</body></html>';
+    var blob=new Blob(["\ufeff"+html],{type:"application/msword"});
+    var a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+    a.download="信访事项诉求登记表_"+c.id+".doc";
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);
+    toast("已导出诉求登记表");
+  };
+
+  renderClips(); renderWave(); $("tAll").textContent=fmt(cur().dur);
+})();
+</script>
+</body>
+</html>
