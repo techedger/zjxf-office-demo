@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo 3 · 信访态势分析工作台｜浙江省信访局</title>
+<style>
+:root{
+  --ink:#0e1c2e; --ink2:#334a63; --ink3:#6b7f96; --line:#e2e8f0; --line2:#eef2f7;
+  --bg:#f2f6fb; --card:#fff; --blue:#123a6b; --blue2:#1f5fa8; --blue3:#e8f0fa;
+  --red:#c8102e; --red3:#fdecee; --green:#1a7f5a; --green3:#e8f6f0; --amber:#a86000; --amber3:#fdf3e3;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,sans-serif;
+  background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.topbar{height:56px;background:var(--blue);color:#fff;display:flex;align-items:center;gap:14px;padding:0 20px;
+  position:sticky;top:0;z-index:50}
+.topbar .logo{width:26px;height:26px;border-radius:6px;background:#fff;color:var(--blue);display:flex;
+  align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.topbar h1{font-size:15px;margin:0;font-weight:600;white-space:nowrap}
+.topbar .sub{font-size:12px;opacity:.72;border-left:1px solid rgba(255,255,255,.28);padding-left:14px}
+.topbar .spacer{flex:1}
+.tag-demo{font-size:11px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);
+  padding:3px 9px;border-radius:20px;white-space:nowrap}
+.wrap{max-width:1320px;margin:0 auto;padding:16px 20px 50px}
+.hero h2{margin:0 0 6px;font-size:21px}
+.hero p{margin:0;color:var(--ink2);font-size:13px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px}
+.chip{font-size:11.5px;background:#fff;border:1px solid var(--line);color:var(--ink2);padding:4px 10px;border-radius:20px}
+.chip b{color:var(--blue);font-weight:600}
+
+/* 过滤条 */
+.filters{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin-bottom:14px;
+  display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.filters .grp{display:flex;align-items:center;gap:7px}
+.filters label{font-size:12px;color:var(--ink3)}
+select,input[type=text]{padding:7px 9px;border:1px solid var(--line);border-radius:8px;font-size:12.5px;
+  font-family:inherit;background:#fff;color:var(--ink);outline:none}
+select:focus,input:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(31,95,168,.1)}
+.seg{display:flex;background:var(--line2);border-radius:8px;padding:2px;gap:2px}
+.seg button{border:0;background:transparent;padding:5px 11px;border-radius:6px;font-size:12px;font-family:inherit;
+  color:var(--ink2);cursor:pointer;transition:.15s}
+.seg button.on{background:#fff;color:var(--blue);font-weight:600;box-shadow:0 1px 2px rgba(16,40,70,.12)}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:14px}
+@media(max-width:1080px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 15px;position:relative;overflow:hidden}
+.kpi .lb{font-size:11.5px;color:var(--ink3);margin-bottom:5px}
+.kpi .vv{font-size:25px;font-weight:700;font-family:ui-monospace,Menlo,monospace;line-height:1.1;letter-spacing:-.5px}
+.kpi .dd{font-size:11px;margin-top:5px;display:flex;align-items:center;gap:4px}
+.kpi .up{color:var(--red)}.kpi .dn{color:var(--green)}
+.kpi:after{content:"";position:absolute;right:-18px;top:-18px;width:56px;height:56px;border-radius:50%;
+  background:var(--blue3);opacity:.7}
+.kpi.alert .vv{color:var(--red)}
+.kpi.alert:after{background:var(--red3)}
+
+/* 主区 */
+.grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:14px;align-items:start}
+@media(max-width:1080px){.grid{grid-template-columns:1fr}}
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:14px}
+.panel>.hd{padding:11px 14px;border-bottom:1px solid var(--line2);display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.panel>.hd .n{width:18px;height:18px;border-radius:5px;background:var(--blue3);color:var(--blue2);font-size:11px;
+  display:flex;align-items:center;justify-content:center;font-weight:700}
+.panel>.hd .rt{margin-left:auto;font-weight:400;font-size:11.5px;color:var(--ink3)}
+.panel>.bd{padding:14px}
+.muted{color:var(--ink3);font-size:12px}
+
+/* 图表 */
+.chartbox{position:relative}
+svg .gl{stroke:#eef2f7;stroke-width:1}
+svg .ax{font-size:10px;fill:#8a9bb0}
+svg .lbl{font-size:10.5px;fill:#334a63}
+svg .lbl2{font-size:10px;fill:#fff;font-weight:600}
+svg .bar{transition:.2s;cursor:pointer}
+svg .bar:hover{opacity:.78}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--ink3);margin-top:8px}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend i{width:10px;height:10px;border-radius:2px}
+
+/* 列表 */
+table.tb{width:100%;border-collapse:collapse;font-size:12px}
+table.tb th{text-align:left;font-weight:600;color:var(--ink3);font-size:11px;padding:7px 8px;border-bottom:1px solid var(--line);
+  background:#fafcff;white-space:nowrap}
+table.tb td{padding:8px;border-bottom:1px solid var(--line2);vertical-align:middle}
+table.tb tr:hover td{background:#fbfdff;cursor:pointer}
+table.tb tr.on td{background:var(--blue3)}
+.rank{width:19px;height:19px;border-radius:5px;background:var(--line2);color:var(--ink2);display:inline-flex;
+  align-items:center;justify-content:center;font-size:10.5px;font-weight:700}
+.rank.t1{background:var(--red);color:#fff}.rank.t2{background:#d9614a;color:#fff}.rank.t3{background:var(--amber);color:#fff}
+.tag{font-size:10px;padding:1px 6px;border-radius:8px;background:var(--blue3);color:var(--blue2);white-space:nowrap}
+.tag.r{background:var(--red3);color:var(--red)}.tag.a{background:var(--amber3);color:var(--amber)}
+.tag.g{background:var(--green3);color:var(--green)}
+.pbar{height:5px;border-radius:3px;background:var(--line2);overflow:hidden;min-width:52px}
+.pbar i{display:block;height:100%;background:var(--blue2)}
+
+/* 洞察 */
+.insight{border-left:3px solid var(--blue2);background:#fafcff;border-radius:0 9px 9px 0;padding:10px 12px;
+  font-size:12.5px;line-height:1.7;margin-bottom:10px}
+.insight:last-child{margin-bottom:0}
+.insight b{color:var(--blue)}
+.insight.warn{border-left-color:var(--red);background:var(--red3)}
+.insight.warn b{color:var(--red)}
+.insight .tt{font-weight:600;margin-bottom:3px;display:flex;gap:6px;align-items:center;font-size:12.5px}
+
+.btn{border:0;border-radius:9px;padding:8px 13px;font-size:12.5px;font-family:inherit;cursor:pointer;font-weight:500;
+  display:inline-flex;align-items:center;gap:6px;justify-content:center;transition:.15s}
+.btn-p{background:var(--blue);color:#fff}.btn-p:hover{background:#0d2e56}
+.btn-o{background:#fff;border:1px solid var(--line);color:var(--ink2)}.btn-o:hover{border-color:var(--blue2);color:var(--blue2)}
+.btn-block{width:100%}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:#0e1c2e;color:#fff;padding:10px 18px;
+  border-radius:10px;font-size:12.5px;opacity:0;pointer-events:none;transition:.25s;z-index:99}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.foot{max-width:1320px;margin:0 auto;padding:0 20px 40px;color:var(--ink3);font-size:11px;line-height:1.7}
+.drill{background:#fafcff;border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-top:12px;font-size:12.5px}
+.drill .h{font-weight:600;margin-bottom:6px;display:flex;gap:8px;align-items:center}
+.drill .row{display:flex;gap:10px;padding:4px 0;font-size:12px;border-bottom:1px dashed var(--line2)}
+.drill .row:last-child{border-bottom:0}
+.drill .row .k{width:70px;color:var(--ink3);flex:0 0 auto}
+.drill .row .v{flex:1}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">信</div>
+  <h1>浙江省信访局 · 千问办公 Demo 03</h1>
+  <div class="sub">信访态势分析工作台</div>
+  <div class="spacer"></div>
+  <span class="tag-demo">数据接入类</span>
+  <span class="tag-demo">演示数据</span>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <h2>从「月度报表」到「每天早晨 8 点的一张图」</h2>
+    <p>面向信访大数据中心与业务处室。把民呼我为平台、12345 工单、复查复核库三路数据接进来，做趋势监测、类案识别、区域画像和「类案同治」建议。</p>
+    <div class="chips">
+      <span class="chip">数据源 <b>3 路</b>（平台 / 热线 / 复查库）</span>
+      <span class="chip">分析维度 <b>4 个</b>（趋势 / 类案 / 区域 / 时效）</span>
+      <span class="chip">交互点 <b>5 处</b></span>
+    </div>
+  </div>
+
+  <div class="filters">
+    <div class="grp">
+      <label>时间范围</label>
+      <div class="seg" id="segPeriod">
+        <button data-v="6" class="on">近 6 个月</button>
+        <button data-v="12">近 12 个月</button>
+        <button data-v="18">近 18 个月</button>
+      </div>
+    </div>
+    <div class="grp">
+      <label>区域</label>
+      <select id="selRegion">
+        <option value="all">全省</option>
+        <option value="hz">杭州市</option>
+        <option value="nb">宁波市</option>
+        <option value="wz">温州市</option>
+        <option value="sx">绍兴市</option>
+        <option value="jh">金华市</option>
+      </select>
+    </div>
+    <div class="grp">
+      <label>事项类别</label>
+      <select id="selCat">
+        <option value="all">全部类别</option>
+        <option value="land">征地补偿</option>
+        <option value="labor">劳动社保</option>
+        <option value="env">生态环境</option>
+        <option value="housing">城乡建设</option>
+      </select>
+    </div>
+    <div class="grp" style="margin-left:auto">
+      <button class="btn btn-p" id="btnRefresh">生成分析</button>
+    </div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid">
+    <div>
+      <div class="panel">
+        <div class="hd"><span class="n">1</span>办理量趋势与化解率<span class="rt" id="trendHint">近 6 个月 · 全省</span></div>
+        <div class="bd">
+          <div class="chartbox"><svg id="trendSvg" viewBox="0 0 760 250" preserveAspectRatio="xMidYMid meet"></svg></div>
+          <div class="legend">
+            <span><i style="background:#1f5fa8"></i>登记量（件）</span>
+            <span><i style="background:#c8102e"></i>一次性化解率（%）</span>
+            <span><i style="background:#a86000"></i>重复信访率（%）</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="hd"><span class="n">2</span>类案聚集识别（同源同因）<span class="rt">按信访量降序</span></div>
+        <div class="bd" style="padding:6px 14px 14px">
+          <table class="tb" id="classTable"></table>
+          <div id="drillBox"></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <div class="hd"><span class="n">3</span>区域分布热力<span class="rt">单位：件</span></div>
+        <div class="bd">
+          <div class="chartbox"><svg id="regionSvg" viewBox="0 0 360 230" preserveAspectRatio="xMidYMid meet"></svg></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="hd"><span class="n">4</span>办理时效画像</div>
+        <div class="bd">
+          <div id="efBox"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="hd"><span class="n">5</span>类案同治建议<span class="rt">自动生成</span></div>
+        <div class="bd" id="adviceBox"></div>
+        <button class="btn btn-o btn-block" id="btnExport" style="margin-top:10px">导出分析简报（.doc）</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="foot">
+  本页面为浙江省信访局「千问办公」演示环境。所有统计口径、数值、类案名称均为模拟构造，仅用于演示分析链路与交互方式，不代表任何真实统计结果，不得对外引用。
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+  function $(id){return document.getElementById(id);}
+  function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+  function toast(m){var t=$("toast");t.textContent=m;t.classList.add("on");
+    clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("on");},1900);}
+
+  var MONTHS=["26-01","26-02","26-03","26-04","26-05","26-06","26-07","26-08","26-09","26-10","26-11","26-12",
+    "25-11","25-12","25-09","25-10","25-07","25-08"];
+  // 统一按时间倒序索引，取末尾 N 个后翻转
+  var DATA={
+    all:{vol:[8420,7310,9680,10240,9870,8610,9150,10280,9640,8320,7860,7410,6980,6420,6120,6580,6240,6010],
+      res:[71.2,70.4,68.8,67.5,69.1,71.8,72.4,70.9,73.6,75.2,76.1,76.8,74.9,73.2,72.6,71.8,70.4,69.6],
+      rep:[18.4,19.1,20.6,21.8,20.2,18.9,18.1,19.4,17.2,16.4,15.8,15.1,17.6,18.8,19.4,20.1,21.6,22.4]},
+    hz:{vol:[2140,1870,2420,2610,2480,2160,2310,2590,2420,2080,1970,1860,1750,1610,1540,1650,1570,1510],
+      res:[73.4,72.6,70.8,69.4,71.2,73.8,74.6,72.9,75.8,77.4,78.2,78.9,76.8,75.2,74.6,73.8,72.4,71.6],
+      rep:[16.2,16.9,18.4,19.6,18.1,16.8,16.1,17.2,15.2,14.4,13.9,13.2,15.6,16.8,17.4,18.1,19.6,20.4]},
+    nb:{vol:[1680,1460,1930,2050,1970,1720,1830,2060,1930,1660,1570,1480,1400,1280,1220,1320,1250,1200],
+      res:[70.1,69.4,67.8,66.4,68.2,70.8,71.6,69.9,72.8,74.4,75.2,75.9,73.8,72.2,71.6,70.8,69.4,68.6],
+      rep:[19.6,20.4,21.9,23.1,21.6,20.2,19.4,20.7,18.5,17.7,17.1,16.4,18.9,20.1,20.7,21.4,22.9,23.7]},
+    wz:{vol:[1240,1080,1420,1510,1450,1270,1350,1520,1420,1230,1160,1090,1030,950,900,970,920,880],
+      res:[66.4,65.6,64.1,62.8,64.6,67.2,68.1,66.4,69.3,70.9,71.7,72.4,70.3,68.7,68.1,67.3,65.9,65.1],
+      rep:[24.1,24.9,26.4,27.6,26.1,24.7,23.9,25.2,23.0,22.2,21.6,20.9,23.4,24.6,25.2,25.9,27.4,28.2]},
+    sx:{vol:[920,800,1050,1120,1070,940,1000,1130,1050,910,860,810,760,700,670,720,680,650],
+      res:[71.8,71.1,69.5,68.2,70.0,72.6,73.4,71.7,74.6,76.2,77.0,77.7,75.6,74.0,73.4,72.6,71.2,70.4],
+      rep:[18.0,18.8,20.3,21.5,20.0,18.6,17.8,19.1,16.9,16.1,15.5,14.8,17.3,18.5,19.1,19.8,21.3,22.1]},
+    jh:{vol:[1080,940,1240,1320,1260,1110,1180,1330,1240,1080,1010,960,900,830,790,850,800,770],
+      res:[69.2,68.4,66.9,65.6,67.4,70.0,70.8,69.1,72.0,73.6,74.4,75.1,73.0,71.4,70.8,70.0,68.6,67.8],
+      rep:[20.4,21.2,22.7,23.9,22.4,21.0,20.2,21.5,19.3,18.5,17.9,17.2,19.7,20.9,21.5,22.2,23.7,24.5]}
+  };
+
+  var CLASSES=[
+    {id:"k1", name:"行政村留用地指标兑现类", cat:"land", n:1284, trend:18.6, src:"余杭区、萧山区、义乌市", risk:"高",
+      why:"同一批村级留用地政策调整后，多个区县对兑现口径理解不一致，形成跨区同因聚集。",
+      act:"省级出台口径统一指引 + 对 6 个重点区县开展专项督办", prove:"可交叉比对土地征收台账与留用地指标台账"},
+    {id:"k2", name:"新就业形态劳动者社保参保类", cat:"labor", n:1086, trend:12.1, src:"杭州市、宁波市、金华市", risk:"中",
+      why:"平台用工关系认定标准不明，导致工伤与社保补缴类诉求集中。",
+      act:"联合人社部门明确平台用工认定口径 + 建立企业约谈机制", prove:"可交叉比对社保参保数据与企业用工备案"},
+    {id:"k3", name:"工业园区夜间异味扰民类", cat:"env", n:842, trend:24.3, src:"温州市瓯海区、台州市黄岩区", risk:"高",
+      why:"投诉集中在夜间时段，但常规日间监测难以复现，导致重复投诉与不满意评价同步上升。",
+      act:"推行夜间错时监测 + 监测数据与整改结果强制公开", prove:"可交叉比对在线监测数据与投诉时段"},
+    {id:"k4", name:"老旧小区加装电梯邻里纠纷类", cat:"housing", n:736, trend:9.4, src:"杭州市、湖州市、嘉兴市", risk:"中",
+      why:"业主意见征询程序与补偿协商机制不完善，同一楼栋反复投诉。",
+      act:"推广「一楼一策」协商模板 + 引入社区调解前置", prove:"可交叉比对加梯审批台账与投诉记录"},
+    {id:"k5", name:"征迁过渡安置费发放延迟类", cat:"land", n:612, trend:-6.2, src:"绍兴市、金华市", risk:"中",
+      why:"过渡安置费按期发放依赖财政拨付节点，跨年度衔接出现断档。",
+      act:"建立过渡安置费发放提醒机制 + 纳入年度预算刚性保障", prove:"可交叉比对财政拨付记录与发放台账"},
+    {id:"k6", name:"职业病患者工伤待遇衔接类", cat:"labor", n:488, trend:6.8, src:"宁波市、衢州市", risk:"中",
+      why:"职业病诊断与工伤认定的时序衔接不畅，待遇落实出现空档期。",
+      act:"建立职业病诊断—工伤认定—待遇发放一体化办理流程", prove:"可交叉比对职业病诊断名录与工伤认定库"}
+  ];
+
+  var state={period:6, region:"all", cat:"all", selClass:"k1"};
+
+  function slice(arr,n){ return arr.slice(arr.length-n); }
+  function labels(n){
+    var all=MONTHS.slice();
+    // MONTHS 前 12 为 26 年，后 6 为 25 年，需构造连续时间轴
+    var seq=["25-07","25-08","25-09","25-10","25-11","25-12","26-01","26-02","26-03","26-04","26-05","26-06",
+      "26-07","26-08","26-09","26-10","26-11","26-12"];
+    return seq.slice(seq.length-n);
+  }
+
+  function getSeries(){
+    var d=DATA[state.region]||DATA.all;
+    // DATA 中每项顺序为 26-01..26-12 然后 25-11,25-12,25-09,25-10,25-07,25-08 -> 重排为时间正序
+    var order=[16,17,14,15,12,13,0,1,2,3,4,5,6,7,8,9,10,11]; // 对应 seq 顺序
+    var vol=[],res=[],rep=[];
+    order.forEach(function(i){ vol.push(d.vol[i]); res.push(d.res[i]); rep.push(d.rep[i]); });
+    var n=state.period;
+    return {vol:slice(vol,n),res:slice(res,n),rep:slice(rep,n),lbl:labels(n)};
+  }
+
+  function renderKpis(){
+    var s=getSeries();
+    var last=s.vol[s.vol.length-1], prev=s.vol[s.vol.length-2];
+    var dv=((last-prev)/prev*100);
+    var res=s.res[s.res.length-1], dres=(res-s.res[s.res.length-2]);
+    var rep=s.rep[s.rep.length-1], drep=(rep-s.rep[s.rep.length-2]);
+    var total=s.vol.reduce(function(a,b){return a+b;},0);
+    var repeatTotal=Math.round(total*rep/100);
+    var overdue=Math.round(total*0.021);
+
+    var items=[
+      {lb:"登记总量（件）", v:total.toLocaleString(), d:(dv>=0?"↑ ":"↓ ")+Math.abs(dv).toFixed(1)+"% 环比", cls:dv>=0?"up":"dn"},
+      {lb:"一次性化解率", v:res.toFixed(1)+"%", d:(dres>=0?"↑ ":"↓ ")+Math.abs(dres).toFixed(1)+" pct", cls:dres>=0?"dn":"up"},
+      {lb:"重复信访率", v:rep.toFixed(1)+"%", d:(drep>=0?"↑ ":"↓ ")+Math.abs(drep).toFixed(1)+" pct", cls:drep>=0?"up":"dn"},
+      {lb:"重复信访件（估算）", v:repeatTotal.toLocaleString(), d:"需并案或包案处理", cls:"up", alert:repeatTotal>Math.round(total*0.18)},
+      {lb:"超期未办结（估算）", v:overdue.toLocaleString(), d:"占比 2.1%", cls:"up", alert:overdue>0}
+    ];
+    $("kpis").innerHTML=items.map(function(i){
+      return '<div class="kpi'+(i.alert?" alert":"")+'"><div class="lb">'+i.lb+'</div>'+
+        '<div class="vv">'+i.v+'</div><div class="dd '+i.cls+'">'+i.d+'</div></div>';
+    }).join("");
+  }
+
+  function renderTrend(){
+    var s=getSeries(); var W=760,H=250,pl=48,pr=20,pt=18,pb=34;
+    var iw=W-pl-pr, ih=H-pt-pb;
+    var maxV=Math.max.apply(null,s.vol)*1.12, minV=0;
+    var n=s.vol.length; var step=iw/(n-1||1);
+    var out="";
+    // 网格
+    for(var g=0;g<=4;g++){
+      var y=pt+ih*g/4;
+      var v=Math.round(maxV*(1-g/4));
+      out+='<line class="gl" x1="'+pl+'" y1="'+y+'" x2="'+(W-pr)+'" y2="'+y+'"/>';
+      out+='<text class="ax" x="'+(pl-7)+'" y="'+(y+3)+'" text-anchor="end">'+v.toLocaleString()+'</text>';
+    }
+    // 面积+柱
+    s.vol.forEach(function(v,i){
+      var x=pl+i*step, bw=Math.max(4,Math.min(step*0.52,22));
+      var h=(v/maxV)*ih;
+      out+='<rect class="bar" x="'+(x-bw/2)+'" y="'+(pt+ih-h)+'" width="'+bw+'" height="'+h+'" rx="2" fill="#cfe0f2" data-i="'+i+'"/>';
+      out+='<text class="ax" x="'+x+'" y="'+(H-pb+16)+'" text-anchor="middle">'+s.lbl[i]+'</text>';
+    });
+    // 化解率折线（右轴 0-100）
+    var resPts=s.res.map(function(v,i){
+      var x=pl+i*step, y=pt+ih-(v/100)*ih;
+      return [x,y];
+    });
+    out+='<path d="M'+resPts.map(function(p){return p[0].toFixed(1)+","+p[1].toFixed(1);}).join(" L")+
+      '" fill="none" stroke="#c8102e" stroke-width="2.2"/>';
+    resPts.forEach(function(p,i){
+      out+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3" fill="#fff" stroke="#c8102e" stroke-width="2"/>';
+      if(i===resPts.length-1){
+        out+='<text class="lbl" x="'+(p[0]-4)+'" y="'+(p[1]-9)+'" text-anchor="end" fill="#c8102e">'+s.res[i].toFixed(1)+'%</text>';
+      }
+    });
+    // 重复率折线
+    var repPts=s.rep.map(function(v,i){
+      var x=pl+i*step, y=pt+ih-(v/100)*ih;
+      return [x,y];
+    });
+    out+='<path d="M'+repPts.map(function(p){return p[0].toFixed(1)+","+p[1].toFixed(1);}).join(" L")+
+      '" fill="none" stroke="#a86000" stroke-width="1.8" stroke-dasharray="5 3"/>';
+    out+='<text class="ax" x="'+(W-pr)+'" y="'+(pt-4)+'" text-anchor="end">右轴：0–100%</text>';
+    $("trendSvg").innerHTML=out;
+
+    var rgText={all:"全省",hz:"杭州市",nb:"宁波市",wz:"温州市",sx:"绍兴市",jh:"金华市"}[state.region];
+    $("trendHint").textContent="近 "+state.period+" 个月 · "+rgText;
+
+    Array.prototype.forEach.call($("trendSvg").querySelectorAll("rect.bar"),function(r){
+      r.onclick=function(){
+        var i=+r.getAttribute("data-i");
+        toast(s.lbl[i]+" 登记 "+s.vol[i].toLocaleString()+" 件，化解率 "+s.res[i].toFixed(1)+"%，重复率 "+s.rep[i].toFixed(1)+"%");
+      };
+    });
+  }
+
+  function renderRegion(){
+    var W=360,H=230,pl=8,pr=8,pt=10,pb=26;
+    var regions=[
+      {k:"hz",n:"杭州",v:1870},{k:"nb",n:"宁波",v:1460},{k:"wz",n:"温州",v:1080},
+      {k:"jh",n:"金华",v:940},{k:"sx",n:"绍兴",v:800},{k:"other",n:"其他",v:1260}
+    ];
+    var max=Math.max.apply(null,regions.map(function(r){return r.v;}));
+    var iw=W-pl-pr, n=regions.length, bw=iw/n*0.62, step=iw/n;
+    var out="";
+    var selected=state.region==="all"?"":state.region;
+    regions.forEach(function(r,i){
+      var x=pl+i*step+step/2;
+      var h=(r.v/max)*90+8;
+      var y=H-pb-h;
+      var col = r.k===selected?"#123a6b":(r.v/max>0.8?"#c8102e":(r.v/max>0.6?"#d9614a":"#8fb3d4"));
+      out+='<rect x="'+(x-bw/2)+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="3" fill="'+col+'" style="cursor:pointer" data-k="'+r.k+'"/>';
+      out+='<text class="lbl" x="'+x+'" y="'+(y-6)+'" text-anchor="middle" style="font-weight:600">'+r.v+'</text>';
+      out+='<text class="ax" x="'+x+'" y="'+(H-pb+15)+'" text-anchor="middle">'+r.n+'</text>';
+    });
+    out+='<line x1="0" y1="'+(H-pb)+'" x2="'+W+'" y2="'+(H-pb)+'" stroke="#e2e8f0"/>';
+    out+='<text class="ax" x="'+W+'" y="12" text-anchor="end">点击柱体切换区域</text>';
+    $("regionSvg").innerHTML=out;
+    Array.prototype.forEach.call($("regionSvg").querySelectorAll("rect[data-k]"),function(r){
+      r.onclick=function(){
+        var k=r.getAttribute("data-k");
+        if(k==="other"){ toast("「其他」为其余 6 市合计，暂不支持下钻"); return; }
+        state.region=k; $("selRegion").value=k; renderAll();
+        toast("已切换区域："+({hz:"杭州市",nb:"宁波市",wz:"温州市",sx:"绍兴市",jh:"金华市"}[k]));
+      };
+    });
+  }
+
+  function renderClasses(){
+    var list=CLASSES.filter(function(c){ return state.cat==="all"||c.cat===state.cat; });
+    list.sort(function(a,b){return b.n-a.n;});
+    if(!list.length){
+      $("classTable").innerHTML='<tr><td style="padding:18px;color:#6b7f96">当前筛选条件下无匹配类案。</td></tr>';
+      $("drillBox").innerHTML=""; return;
+    }
+    if(!list.some(function(c){return c.id===state.selClass;})) state.selClass=list[0].id;
+    $("classTable").innerHTML=
+      '<thead><tr><th style="width:26px">#</th><th>类案名称</th><th style="width:52px">件数</th>'+
+      '<th style="width:64px">同比</th><th style="width:44px">风险</th></tr></thead><tbody>'+
+      list.map(function(c,i){
+        var tr=(c.trend>=0?"+":"")+c.trend.toFixed(1)+"%";
+        var cls=c.trend>=15?"r":(c.trend>=5?"a":"g");
+        return '<tr data-id="'+c.id+'" class="'+(c.id===state.selClass?"on":"")+'">'+
+          '<td><span class="rank'+(i<3?" t"+(i+1):"")+'">'+(i+1)+'</span></td>'+
+          '<td>'+esc(c.name)+'</td>'+
+          '<td style="font-family:ui-monospace,Menlo,monospace">'+c.n.toLocaleString()+'</td>'+
+          '<td><span class="tag '+cls+'">'+tr+'</span></td>'+
+          '<td><span class="tag '+(c.risk==="高"?"r":"a")+'">'+c.risk+'</span></td></tr>';
+      }).join("")+'</tbody>';
+    Array.prototype.forEach.call($("classTable").querySelectorAll("tr[data-id]"),function(tr){
+      tr.onclick=function(){
+        state.selClass=tr.getAttribute("data-id");
+        renderClasses();
+        $("drillBox").scrollIntoView({behavior:"smooth",block:"nearest"});
+      };
+    });
+    var sel=list.filter(function(c){return c.id===state.selClass;})[0];
+    $("drillBox").innerHTML='<div class="drill"><div class="h"><span class="tag '+(sel.risk==="高"?"r":"a")+'">'+sel.risk+'风险</span>'+
+      esc(sel.name)+'</div>'+
+      '<div class="row"><div class="k">涉及区域</div><div class="v">'+esc(sel.src)+'</div></div>'+
+      '<div class="row"><div class="k">聚集成因</div><div class="v">'+esc(sel.why)+'</div></div>'+
+      '<div class="row"><div class="k">治理建议</div><div class="v">'+esc(sel.act)+'</div></div>'+
+      '<div class="row"><div class="k">数据可验</div><div class="v">'+esc(sel.prove)+'</div></div></div>';
+  }
+
+  function renderEfficiency(){
+    var rows=[
+      {n:"5 日内受理告知率", v:98.6, t:"≥98%"},
+      {n:"60 日内办结率", v:92.4, t:"≥95%"},
+      {n:"答复意见书规范率", v:88.1, t:"≥90%"},
+      {n:"复查复核纠错率", v:6.8, t:"≤8%", rev:true},
+      {n:"群众满意度评价率", v:76.2, t:"≥80%"}
+    ];
+    $("efBox").innerHTML=rows.map(function(r){
+      var ok = r.rev ? (r.v<=parseFloat(r.t.replace("≤",""))) : (r.v>=parseFloat(r.t.replace("≥","")));
+      return '<div style="margin-bottom:11px">'+
+        '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">'+
+        '<span>'+r.n+'</span><span style="font-family:ui-monospace,Menlo,monospace;font-weight:600;color:'+
+        (ok?"var(--green)":"var(--red)")+'">'+r.v+'%</span></div>'+
+        '<div class="pbar"><i style="width:'+r.v+'%;background:'+(ok?"var(--green)":"var(--red)")+'"></i></div>'+
+        '<div style="font-size:10.5px;color:var(--ink3);margin-top:3px">目标 '+r.t+(ok?" · 达标":" · 未达标")+'</div>'+
+        '</div>';
+    }).join("");
+  }
+
+  function renderAdvice(){
+    var list=CLASSES.filter(function(c){ return state.cat==="all"||c.cat===state.cat; });
+    list.sort(function(a,b){return b.trend-a.trend;});
+    var top=list.slice(0,3);
+    var html=top.map(function(c,i){
+      return '<div class="insight'+(i===0?" warn":"")+'"><div class="tt">'+
+        (i===0?"◆ 首要治理项":"◇ 建议关注")+'　'+esc(c.name)+'</div>'+
+        '<div>同比 <b>'+(c.trend>=0?"+":"")+c.trend.toFixed(1)+'%</b>，涉及 '+esc(c.src)+'。'+
+        esc(c.act)+'。</div></div>';
+    }).join("");
+    html+='<div class="muted" style="font-size:11px;margin-top:8px">建议按「类案同治、源头根治」思路，优先选择同比上升且涉及 ≥2 个区县的类案开展专项治理。</div>';
+    $("adviceBox").innerHTML=html;
+  }
+
+  function renderAll(){
+    renderKpis(); renderTrend(); renderRegion(); renderClasses(); renderEfficiency(); renderAdvice();
+  }
+
+  Array.prototype.forEach.call($("segPeriod").querySelectorAll("button"),function(b){
+    b.onclick=function(){
+      Array.prototype.forEach.call($("segPeriod").querySelectorAll("button"),function(x){x.classList.remove("on");});
+      b.classList.add("on"); state.period=+b.getAttribute("data-v"); renderAll();
+    };
+  });
+  $("selRegion").onchange=function(){ state.region=$("selRegion").value; renderAll(); };
+  $("selCat").onchange=function(){ state.cat=$("selCat").value; renderAll(); };
+  $("btnRefresh").onclick=function(){ renderAll(); toast("已按当前筛选条件重新生成分析"); };
+
+  $("btnExport").onclick=function(){
+    var s=getSeries();
+    var total=s.vol.reduce(function(a,b){return a+b;},0);
+    var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">'+
+      '<head><meta charset="utf-8"><title>信访态势分析简报</title>'+
+      '<style>@page{size:A4;margin:2.4cm}body{font-family:"仿宋_GB2312","FangSong",serif;font-size:15pt;line-height:1.75}'+
+      'h1{font-family:"方正小标宋简体","SimSun",serif;font-size:21pt;text-align:center;font-weight:normal;letter-spacing:3px}'+
+      'h2{font-family:"黑体","SimHei",sans-serif;font-size:15pt;margin:16pt 0 8pt}'+
+      'p{text-indent:2em;margin:0 0 7pt;text-align:justify}table{border-collapse:collapse;width:100%;font-size:11pt;margin:10pt 0}'+
+      'td,th{border:1px solid #999;padding:5pt 7pt}th{background:#f0f4f8}</style></head><body>'+
+      '<h1>信访态势分析简报</h1>'+
+      '<p style="text-indent:0;text-align:center;font-size:11pt;color:#555">（演示生成 · 数据为模拟值）</p>'+
+      '<h2>一、总体情况</h2>'+
+      '<p>近 '+state.period+' 个月，全省登记信访事项 '+total.toLocaleString()+
+      ' 件，最新月度一次性化解率 '+s.res[s.res.length-1].toFixed(1)+'%，重复信访率 '+s.rep[s.rep.length-1].toFixed(1)+'%。</p>'+
+      '<h2>二、类案聚集</h2><table><tr><th>类案</th><th>件数</th><th>同比</th><th>风险</th></tr>'+
+      CLASSES.map(function(c){return '<tr><td>'+esc(c.name)+'</td><td>'+c.n+'</td><td>'+
+        (c.trend>=0?"+":"")+c.trend.toFixed(1)+'%</td><td>'+c.risk+'</td></tr>';}).join("")+'</table>'+
+      '<h2>三、治理建议</h2>'+
+      CLASSES.slice(0,3).map(function(c,i){return '<p>'+(i+1)+'. '+esc(c.name)+'：'+esc(c.act)+'。</p>';}).join("")+
+      '<p style="text-indent:0;margin-top:20pt">编制：信访大数据中心　审核：＿＿＿　日期：2026 年 11 月</p>'+
+      '</body></html>';
+    var blob=new Blob(["\ufeff"+html],{type:"application/msword"});
+    var a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+    a.download="信访态势分析简报.doc"; document.body.appendChild(a); a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);
+    toast("已导出分析简报");
+  };
+
+  renderAll();
+})();
+</script>
+</body>
+</html>
