@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo 1 · 信访事项「一案一档」智能办理包｜浙江省信访局</title>
+<style>
+:root{
+  --ink:#0e1c2e; --ink2:#334a63; --ink3:#6b7f96; --line:#e2e8f0; --line2:#eef2f7;
+  --bg:#f4f7fb; --card:#ffffff; --blue:#123a6b; --blue2:#1f5fa8; --blue3:#e8f0fa;
+  --red:#c8102e; --red3:#fdecee; --green:#1a7f5a; --green3:#e8f6f0; --amber:#a86000; --amber3:#fdf3e3;
+  --radius:12px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,sans-serif;
+  background:var(--bg); color:var(--ink); font-size:14px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--blue2);text-decoration:none}
+.topbar{
+  height:56px;background:var(--blue);color:#fff;display:flex;align-items:center;
+  gap:14px;padding:0 20px;position:sticky;top:0;z-index:50;
+}
+.topbar .logo{width:26px;height:26px;border-radius:6px;background:#fff;color:var(--blue);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:0 0 auto}
+.topbar h1{font-size:15px;margin:0;font-weight:600;letter-spacing:.3px;white-space:nowrap}
+.topbar .sub{font-size:12px;opacity:.72;border-left:1px solid rgba(255,255,255,.28);padding-left:14px}
+.topbar .spacer{flex:1}
+.tag-demo{font-size:11px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);
+  padding:3px 9px;border-radius:20px;letter-spacing:.5px;white-space:nowrap}
+.wrap{max-width:1280px;margin:0 auto;padding:18px 20px 60px}
+.hero{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px}
+.hero .t{flex:1;min-width:280px}
+.hero h2{margin:0 0 6px;font-size:21px;letter-spacing:.4px}
+.hero p{margin:0;color:var(--ink2);font-size:13px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chip{font-size:11.5px;background:#fff;border:1px solid var(--line);color:var(--ink2);
+  padding:4px 10px;border-radius:20px}
+.chip b{color:var(--blue);font-weight:600}
+.cols{display:grid;grid-template-columns:300px minmax(0,1fr) 320px;gap:14px;align-items:start}
+@media(max-width:1180px){.cols{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.panel > .hd{padding:11px 14px;border-bottom:1px solid var(--line2);display:flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:600;color:var(--ink)}
+.panel > .hd .n{width:18px;height:18px;border-radius:5px;background:var(--blue3);color:var(--blue2);
+  font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.panel > .bd{padding:12px 14px}
+.muted{color:var(--ink3);font-size:12px}
+
+/* 事项卡 */
+.case{border:1px solid var(--line);border-radius:10px;padding:10px 11px;margin-bottom:9px;cursor:pointer;
+  transition:.15s;background:#fff}
+.case:hover{border-color:#b9cfe8;background:#fbfdff}
+.case.on{border-color:var(--blue2);background:var(--blue3);box-shadow:inset 3px 0 0 var(--blue2)}
+.case .no{font-size:11px;color:var(--ink3);font-family:ui-monospace,Menlo,monospace}
+.case .ti{font-size:13px;font-weight:600;margin:2px 0 4px;line-height:1.35}
+.case .meta{font-size:11.5px;color:var(--ink3)}
+.pill{display:inline-block;font-size:10.5px;padding:1px 7px;border-radius:10px;background:var(--blue3);color:var(--blue2);
+  margin-right:5px;font-weight:500}
+
+/* 表单控件 */
+label.f{display:block;font-size:12px;color:var(--ink2);margin:0 0 4px;font-weight:500}
+select,input[type=text]{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;
+  font-size:12.5px;font-family:inherit;background:#fff;color:var(--ink);outline:none}
+select:focus,input[type=text]:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(31,95,168,.10)}
+.fgroup{margin-bottom:11px}
+.seg{display:flex;background:var(--line2);border-radius:8px;padding:2px;gap:2px}
+.seg button{flex:1;border:0;background:transparent;padding:6px 4px;border-radius:6px;font-size:12px;
+  font-family:inherit;color:var(--ink2);cursor:pointer;transition:.15s}
+.seg button.on{background:#fff;color:var(--blue);font-weight:600;box-shadow:0 1px 2px rgba(16,40,70,.12)}
+
+/* 法条 */
+.law{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed var(--line2);font-size:12px}
+.law:last-child{border-bottom:0}
+.law input{margin-top:3px;accent-color:var(--blue2);cursor:pointer}
+.law .k{flex:1;color:var(--ink2);line-height:1.5}
+.law .k b{color:var(--ink);font-weight:600}
+
+/* 文档列表 */
+.doclist{display:flex;flex-direction:column;gap:0}
+.doc{display:flex;align-items:center;gap:9px;padding:8px 4px;border-bottom:1px solid var(--line2);cursor:pointer}
+.doc:last-child{border-bottom:0}
+.doc:hover{background:#fbfdff}
+.doc.on{background:var(--blue3)}
+.doc .ic{width:24px;height:24px;border-radius:6px;background:var(--blue3);color:var(--blue2);display:flex;
+  align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:0 0 auto}
+.doc.on .ic{background:var(--blue2);color:#fff}
+.doc .nm{flex:1;font-size:12.5px}
+.doc .st{font-size:10.5px;padding:1px 6px;border-radius:9px;background:var(--green3);color:var(--green);font-weight:500}
+.doc .st.warn{background:var(--amber3);color:var(--amber)}
+
+/* 文档预览 */
+.preview{background:#fff;border:1px solid var(--line);border-radius:10px;padding:26px 32px;min-height:420px;
+  font-family:"Songti SC","STSong","SimSun",serif;font-size:13px;line-height:2.05;color:#1b2b3f}
+.preview .dh{text-align:center;font-size:17px;font-weight:700;letter-spacing:3px;margin-bottom:6px;
+  font-family:"PingFang SC",sans-serif}
+.preview .dno{text-align:center;font-size:11.5px;color:var(--ink3);margin-bottom:20px;letter-spacing:1px;
+  font-family:ui-monospace,Menlo,monospace}
+.preview p{margin:0 0 11px;text-indent:2em;text-align:justify}
+.preview .nid{text-indent:0;text-align:right;color:var(--ink2);font-size:12.5px}
+pre.plain{white-space:pre-wrap;word-break:break-word;font-family:inherit;margin:0;text-indent:0}
+.hl{background:#fff3b0;padding:0 2px;border-radius:2px}
+.hl-err{background:#ffd9de;padding:0 2px;border-radius:2px}
+
+/* 按钮 */
+.btn{border:0;border-radius:9px;padding:9px 14px;font-size:12.5px;font-family:inherit;cursor:pointer;
+  font-weight:500;transition:.15s;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn-p{background:var(--blue);color:#fff}
+.btn-p:hover{background:#0d2e56}
+.btn-o{background:#fff;border:1px solid var(--line);color:var(--ink2)}
+.btn-o:hover{border-color:var(--blue2);color:var(--blue2)}
+.btn-r{background:var(--red);color:#fff}
+.btn-r:hover{background:#a50d26}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-block{width:100%}
+.btn-lg{padding:11px 16px;font-size:13.5px}
+
+/* 校验 */
+.chk{border:1px solid var(--line);border-radius:9px;padding:9px 10px;margin-bottom:8px;font-size:12px;
+  background:#fff;border-left:3px solid var(--amber);cursor:pointer;transition:.15s}
+.chk:hover{background:var(--amber3)}
+.chk.err{border-left-color:var(--red);background:var(--red3)}
+.chk.ok{border-left-color:var(--green);background:var(--green3)}
+.chk .h{font-weight:600;font-size:12px;margin-bottom:2px;display:flex;gap:6px;align-items:center}
+.chk .lv{font-size:10px;padding:1px 6px;border-radius:8px;background:#fff;border:1px solid currentColor;font-weight:500}
+.chk .d{color:var(--ink2);font-size:11.5px;line-height:1.5}
+.score{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.score .v{font-size:26px;font-weight:700;color:var(--blue);font-family:ui-monospace,Menlo,monospace;line-height:1}
+.score .l{font-size:11.5px;color:var(--ink3);line-height:1.3}
+.bar{height:6px;border-radius:3px;background:var(--line2);overflow:hidden;margin-bottom:12px}
+.bar i{display:block;height:100%;background:var(--green);transition:width .5s}
+.note{font-size:11px;color:var(--ink3);line-height:1.55;margin-top:8px}
+.section-t{font-size:12px;font-weight:600;color:var(--ink);margin:14px 0 7px;padding-bottom:5px;
+  border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between}
+.section-t:first-child{margin-top:0}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:#0e1c2e;color:#fff;
+  padding:10px 18px;border-radius:10px;font-size:12.5px;opacity:0;pointer-events:none;transition:.25s;z-index:99}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.foot{max-width:1280px;margin:0 auto;padding:0 20px 40px;color:var(--ink3);font-size:11px;line-height:1.7}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">信</div>
+  <h1>浙江省信访局 · 千问办公 Demo 01</h1>
+  <div class="sub">信访事项「一案一档」智能办理包</div>
+  <div class="spacer"></div>
+  <span class="tag-demo">产物生成类</span>
+  <span class="tag-demo">演示数据</span>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="t">
+      <h2>选定 1 件信访事项，产出 6 类文书 + 1 套归档卷宗</h2>
+      <p>面向信访事项办理岗与复查复核岗。把「受理—转送—办理—答复—送达—归档」整条链路上的文书工作，压缩成一次生成 + 一次校验。</p>
+      <div class="chips">
+        <span class="chip">链路覆盖 <b>6 个环节</b></span>
+        <span class="chip">单件文书耗时 <b>45 分钟 → 4 分钟</b>（模拟测算）</span>
+        <span class="chip">交互点 <b>5 处</b></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols">
+
+    <!-- 左列 -->
+    <div>
+      <div class="panel" style="margin-bottom:14px">
+        <div class="hd"><span class="n">1</span>选择信访事项</div>
+        <div class="bd" id="caseList"></div>
+      </div>
+
+      <div class="panel" style="margin-bottom:14px">
+        <div class="hd"><span class="n">2</span>办理参数</div>
+        <div class="bd">
+          <div class="fgroup">
+            <label class="f">事项类别（自动识别，可修正）</label>
+            <select id="selType">
+              <option>征地补偿</option>
+              <option>劳动社保</option>
+              <option>生态环境</option>
+              <option>涉法涉诉（不适用本流程）</option>
+            </select>
+          </div>
+          <div class="fgroup">
+            <label class="f">办理方式</label>
+            <div class="seg" id="segMode">
+              <button data-v="转送" class="on">转送</button>
+              <button data-v="交办">交办</button>
+              <button data-v="直接办理">直接办理</button>
+            </div>
+          </div>
+          <div class="fgroup">
+            <label class="f">答复说理强度</label>
+            <div class="seg" id="segTone">
+              <button data-v="标准" class="on">标准</button>
+              <button data-v="加强说理">加强说理</button>
+            </div>
+            <div class="note">加强说理会扩写事实认定、法律适用、救济途径三段，降低复查复核被纠错概率。</div>
+          </div>
+          <div class="fgroup">
+            <label class="f">承办单位</label>
+            <select id="selOrg">
+              <option>余杭区人民政府</option>
+              <option>杭州市人力资源和社会保障局</option>
+              <option>温州市生态环境局瓯海分局</option>
+            </select>
+          </div>
+          <button class="btn btn-p btn-block btn-lg" id="btnGen">生成 6 类文书</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="hd"><span class="n">3</span>法规依据（可增删）</div>
+        <div class="bd" id="lawList"></div>
+      </div>
+    </div>
+
+    <!-- 中列 -->
+    <div>
+      <div class="panel" style="margin-bottom:14px">
+        <div class="hd">
+          <span class="n">4</span>文书目录
+          <span class="muted" id="genHint" style="margin-left:auto;font-weight:400">点击左侧「生成 6 类文书」</span>
+        </div>
+        <div class="bd" style="padding:6px 14px">
+          <div class="doclist" id="docList"></div>
+        </div>
+      </div>
+      <div class="preview" id="preview">
+        <div class="dh">文 书 预 览</div>
+        <div class="dno">ZJ-XFJ-DEMO · 演示环境</div>
+        <p style="text-indent:0;color:#6b7f96;text-align:center;font-family:'PingFang SC',sans-serif;font-size:12.5px;line-height:1.9">
+          选择左侧事项 → 点击「生成 6 类文书」→<br>在文书目录中点击任意一份查看正文。
+        </p>
+        <p style="text-indent:0;color:#6b7f96;text-align:center;font-family:'PingFang SC',sans-serif;font-size:12.5px;line-height:1.9">
+          答复意见书会随「办理方式」「说理强度」「法规依据勾选」实时变化。
+        </p>
+      </div>
+    </div>
+
+    <!-- 右列 -->
+    <div>
+      <div class="panel" style="margin-bottom:14px">
+        <div class="hd"><span class="n">5</span>一致性校验</div>
+        <div class="bd">
+          <div class="score">
+            <div class="v" id="scoreV">--</div>
+            <div class="l" id="scoreL">尚未校验</div>
+          </div>
+          <div class="bar"><i id="scoreBar" style="width:0"></i></div>
+          <button class="btn btn-plain btn-o btn-block" id="btnCheck" style="margin-bottom:10px">执行校验</button>
+          <div id="checkList"></div>
+          <div class="note">校验维度：要素完整性、文书间数据一致、诉求逐项回应、法条引用现行有效、期限合规。</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="hd"><span class="n">6</span>导出归档</div>
+        <div class="bd">
+          <button class="btn btn-p btn-block" id="btnExportDoc" style="margin-bottom:8px">导出当前文书（.doc）</button>
+          <button class="btn btn-o btn-block" id="btnExportAll">导出整套卷宗目录（.doc）</button>
+          <div class="note">导出的 .doc 可直接用 Word / WPS 打开继续编辑、套用机关公文模板。</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="foot">
+  本页面为浙江省信访局「千问办公」演示环境，全部事项、姓名、单位、金额均为模拟数据，不涉及任何真实信访人信息。文书格式参考《信访工作条例》与浙江省信访事项办理规范示意，不作为正式文书使用。
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var CASES = [
+    {
+      id:"A", no:"杭集访〔2026〕0417号", title:"陈某反映征地补偿标准执行不到位",
+      cat:"征地补偿", city:"杭州市余杭区", date:"2026-03-11", person:"陈某", org:"余杭区人民政府",
+      claim:"要求按杭政函〔2025〕46 号新标准补发征地补偿差额 8.6 万元，并要求书面答复。",
+      fact:"信访人系余杭区某街道某村村民，2024 年 6 月其承包地被征收 1.83 亩。信访人主张街道按旧标准（区片综合地价 6.2 万元/亩）核算，未执行 2025 年 3 月调整后的新标准（7.9 万元/亩），差额合计 8.6 万元。街道答复称征收行为发生于 2024 年，应适用行为发生时标准。",
+      laws:[
+        {k:"《信访工作条例》第二十二条", d:"对信访人提出的信访事项，应当予以登记，并在 15 日内决定是否受理并告知信访人。"},
+        {k:"《信访工作条例》第三十二条", d:"对信访事项有权处理的机关、单位应当自受理之日起 60 日内办结；情况复杂的可以适当延长，但延长期限不得超过 30 日。"},
+        {k:"《浙江省信访条例》第十八条", d:"信访事项办理应当听取信访人陈述事实和理由，可以要求信访人、有关组织和人员说明情况。"},
+        {k:"《土地管理法》第四十八条", d:"征收土地应当给予公平、合理的补偿，保障被征地农民原有生活水平不降低、长远生计有保障。"}
+      ],
+      errs:[
+        {lv:"高", h:"答复补偿金额与测算表不一致", d:"答复意见书正文写「差额 8.6 万元」，附件测算表合计为 8.2 万元，两处相差 0.4 万元。"},
+        {lv:"高", h:"受理日期晚于转送日期", d:"受理告知书载明受理日期 2026-03-11，转送交办单载明转送日期 2026-03-09，程序倒置。"},
+        {lv:"中", h:"诉求未逐项回应", d:"信访人提出「要求书面答复」的程序性诉求，答复意见书未作回应。"}
+      ]
+    },
+    {
+      id:"B", no:"甬人社访〔2026〕1129号", title:"王某反映工伤认定超期、单位未缴社保",
+      cat:"劳动社保", city:"宁波市海曙区", date:"2026-04-02", person:"王某", org:"宁波市人力资源和社会保障局",
+      claim:"要求认定 2025 年 9 月 12 日事故为工伤，并责令某建设集团补缴 2022 年 3 月至 2025 年 5 月共 37 个月社会保险费。",
+      fact:"信访人系某建设集团有限公司职工，2025 年 9 月 12 日在项目工地作业时被坠落物砸伤左腿。单位于 2025 年 10 月 20 日提出工伤认定申请，至今未出具认定结论。信访人称单位自 2022 年 3 月起未为其缴纳工伤保险，导致其无法享受待遇。",
+      laws:[
+        {k:"《工伤保险条例》第十七条", d:"职工发生事故伤害，所在单位应当自事故伤害发生之日起 30 日内提出工伤认定申请。"},
+        {k:"《工伤保险条例》第二十条", d:"社会保险行政部门应当自受理工伤认定申请之日起 60 日内作出工伤认定的决定。"},
+        {k:"《社会保险法》第六十三条", d:"用人单位未按时足额缴纳社会保险费的，由社会保险费征收机构责令其限期缴纳或者补足。"},
+        {k:"《信访工作条例》第二十六条", d:"对属于依法应当通过诉讼、仲裁、行政复议等法定途径解决的投诉请求，应当告知信访人依照有关法律、行政法规规定程序向有关机关提出。"}
+      ],
+      errs:[
+        {lv:"高", h:"工伤认定超过法定期限未办结", d:"受理日期 2025-10-28，法定 60 日办结期限届满日为 2025-12-27，至今已逾期 128 天，答复未说明理由。"},
+        {lv:"中", h:"补缴月份与工资凭证不符", d:"答复表述「补缴 2022 年 3 月至 2025 年 5 月共 37 个月」，附件工资表显示实际用工起始为 2022 年 5 月，应为 35 个月。"},
+        {lv:"中", h:"未告知法定救济途径", d:"涉及工伤认定与社保补缴，答复意见未按《信访工作条例》第二十六条告知仲裁/行政复议途径。"}
+      ]
+    },
+    {
+      id:"C", no:"温环访〔2026〕0288号", title:"李某等 12 户反映工业园区夜间异味扰民",
+      cat:"生态环境", city:"温州市瓯海区", date:"2026-05-19", person:"李某（代表 12 户）", org:"温州市生态环境局瓯海分局",
+      claim:"要求对某工业园区涉气企业开展全面排查，对超标排放企业停产整治，并公开监测数据和整改结果。",
+      fact:"信访人代表瓯海区某小区 12 户居民，反映 2026 年 3 月以来夜间 22 时至次日 2 时常有刺激性异味，怀疑来自邻近工业园区某鞋材企业。信访人已于 4 月通过 12345 热线投诉 3 次，答复均为「未发现超标」，群众不满意。",
+      laws:[
+        {k:"《大气污染防治法》第八十一条", d:"排放工业废气的企业事业单位应当采取集中收集处理等措施，严格控制工业废气排放。"},
+        {k:"《环境保护法》第五十七条", d:"公民、法人和其他组织发现任何单位和个人有污染环境和破坏生态行为的，有权向环境保护主管部门举报。"},
+        {k:"《信访工作条例》第三十条", d:"对信访事项有权处理的机关、单位应当调查核实，并依照有关法律、法规、规章及其他有关规定作出处理。"},
+        {k:"《浙江省信访条例》第二十四条", d:"涉及多个机关、单位的信访事项，由本级信访工作联席会议协调确定承办单位。"}
+      ],
+      errs:[
+        {lv:"高", h:"重复信访未合并办理", d:"信访人此前 3 次通过 12345 反映同一诉求（工单号 3 个），本次未作并案处理，存在「初转重」风险。"},
+        {lv:"中", h:"监测时点与投诉时段不匹配", d:"答复引用「日间监测达标」结论，但群众反映异味集中在夜间 22 时至次日 2 时，监测时段未覆盖。"},
+        {lv:"中", h:"未回应信息公开诉求", d:"信访人要求公开监测数据和整改结果，答复未说明公开渠道与时限。"}
+      ]
+    }
+  ];
+
+  var DOCS = [
+    {k:"受理", name:"信访事项受理告知书"},
+    {k:"转送", name:"信访事项转送（交办）单"},
+    {k:"方案", name:"办理工作方案"},
+    {k:"答复", name:"信访事项答复意见书"},
+    {k:"送达", name:"送达回证"},
+    {k:"结案", name:"结案报告"}
+  ];
+
+  var state = {
+    caseId:"A", mode:"转送", tone:"标准", org:"余杭区人民政府",
+    lawsOn:[0,1,2,3], activeDoc:"受理", generated:false, checked:false
+  };
+
+  function $(id){return document.getElementById(id);}
+  function cur(){return CASES.filter(function(c){return c.id===state.caseId;})[0];}
+  function toast(msg){
+    var t=$("toast"); t.textContent=msg; t.classList.add("on");
+    clearTimeout(t._tm); t._tm=setTimeout(function(){t.classList.remove("on");},1900);
+  }
+  function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+  /* ---------- 左列 ---------- */
+  function renderCases(){
+    $("caseList").innerHTML = CASES.map(function(c){
+      return '<div class="case'+(c.id===state.caseId?" on":"")+'" data-id="'+c.id+'">'+
+        '<div class="no">'+c.no+'</div>'+
+        '<div class="ti">'+esc(c.title)+'</div>'+
+        '<div class="meta"><span class="pill">'+c.cat+'</span>'+esc(c.city)+' · 受理 '+c.date+'</div>'+
+      '</div>';
+    }).join("");
+    Array.prototype.forEach.call(document.querySelectorAll(".case"),function(el){
+      el.onclick=function(){
+        state.caseId=el.getAttribute("data-id");
+        var c=cur();
+        $("selType").value=c.cat;
+        $("selOrg").value=c.org;
+        state.org=c.org;
+        state.generated=false; state.checked=false;
+        $("docList").innerHTML='<div class="muted" style="padding:10px 0">尚未生成</div>';
+        $("checkList").innerHTML="";
+        $("scoreV").textContent="--"; $("scoreL").textContent="尚未校验"; $("scoreBar").style.width="0";
+        renderCases(); renderLaws(); resetPreview();
+      };
+    });
+  }
+
+  function renderLaws(){
+    var c=cur();
+    $("lawList").innerHTML = c.laws.map(function(l,i){
+      var on = state.lawsOn.indexOf(i)>=0;
+      return '<label class="law"><input type="checkbox" '+(on?"checked":"")+' data-i="'+i+'">'+
+        '<span class="k"><b>'+esc(l.k)+'</b><br>'+esc(l.d)+'</span></label>';
+    }).join("");
+    Array.prototype.forEach.call($("lawList").querySelectorAll("input"),function(cb){
+      cb.onchange=function(){
+        var i=+cb.getAttribute("data-i");
+        var p=state.lawsOn.indexOf(i);
+        if(cb.checked){ if(p<0) state.lawsOn.push(i); } else { if(p>=0) state.lawsOn.splice(p,1); }
+        state.lawsOn.sort();
+        if(state.generated && state.activeDoc==="答复"){ renderPreview(); }
+      };
+    });
+  }
+
+  /* ---------- 生成 ---------- */
+  function genRunningDays(c){
+    var d1=new Date(c.date), d2=new Date("2026-06-30");
+    return Math.max(1, Math.round((d2-d1)/86400000));
+  }
+
+  function docText(key){
+    var c=cur(), d=c.date, serial=c.no;
+    var laws=state.lawsOn.map(function(i){return c.laws[i];});
+    var lawStr=laws.map(function(l){return l.k;}).join("；");
+
+    if(key==="受理"){
+      return {
+        title:"信访事项受理告知书",
+        no:serial+"·受",
+        body:
+"<p>"+esc(c.person)+"：</p>"+
+"<p>您于 "+d+" 反映的关于「"+esc(c.title)+"」的信访事项，本机关已收悉。经审查，该事项属于《信访工作条例》规定的受理范围，本机关决定予以受理。</p>"+
+"<p>本机关将依照《信访工作条例》第三十二条规定，自受理之日起 60 日内办结并书面答复您；情况复杂需要延长的，延长期限不超过 30 日，并会事先告知您延期理由。</p>"+
+"<p>办理期间，请您配合承办单位调查核实，如实提供有关材料。如需补充材料，承办单位将与您联系。</p>"+
+"<p>特此告知。</p>"+
+"<p class='nid'>"+esc(state.org)+"<br>"+d.replace(/-/g,"年").replace(/^(\d{4})年(\d{2})年(\d{2})$/,"$1年$2月$3日")+"</p>"
+      };
+    }
+
+    if(key==="转送"){
+      var modeMap={"转送":"转送","交办":"交办","直接办理":"直接办理"};
+      return {
+        title:"信访事项"+modeMap[state.mode]+"单",
+        no:serial+"·转",
+        body:
+"<p class='nid' style='text-align:left'>"+esc(state.org)+"：</p>"+
+"<p>现将信访人"+esc(c.person)+"于 "+d+" 反映的信访事项"+modeMap[state.mode]+"你单位办理。</p>"+
+"<p><b>一、信访事项概要</b><br>"+esc(c.claim)+"</p>"+
+"<p><b>二、办理要求</b><br>1. 请于收到本单之日起 5 个工作日内与信访人联系，听取陈述事实和理由；<br>"+
+"2. 请于 60 日内办结并出具书面答复意见，经分管领导审签后送达信访人；<br>"+
+"3. 办理过程中请同步在民呼我为统一平台更新办理节点，做到全流程留痕。<br>"+
+(state.mode==="交办"?"4. 本件为交办件，办理结果须报本机关审核后答复。":"")+"</p>"+
+"<p><b>三、依据</b><br>"+esc(lawStr)+"</p>"+
+"<p class='nid'>转送单位：浙江省信访局<br>"+d+"</p>"
+      };
+    }
+
+    if(key==="方案"){
+      return {
+        title:"办理工作方案",
+        no:serial+"·案",
+        body:
+"<p><b>一、事项基本情况</b></p>"+
+"<p>"+esc(c.fact)+"</p>"+
+"<p><b>二、信访人诉求</b></p>"+
+"<p>"+esc(c.claim)+"</p>"+
+"<p><b>三、工作步骤</b></p>"+
+"<p>1. <b>联系核实</b>（第 1—5 日）：由承办处室指定专人联系信访人，制作谈话记录，核实事实与证据材料。</p>"+
+"<p>2. <b>调查取证</b>（第 6—25 日）：调取相关卷宗、台账、监测或缴费记录；必要时开展现场核查、走访周边群众、听取第三方意见。</p>"+
+"<p>3. <b>会商研判</b>（第 26—35 日）：组织业务处室、法制部门会商，形成处理意见；涉及多部门的，提请本级信访工作联席会议协调。</p>"+
+"<p>4. <b>答复送达</b>（第 36—50 日）：起草答复意见书，经合法性审核后由分管领导签发，5 个工作日内送达信访人并制作送达回证。</p>"+
+"<p>5. <b>归档总结</b>（第 51—60 日）：形成结案报告，全案材料按「一案一档」归档，同步更新平台办理状态。</p>"+
+"<p><b>四、风险预判</b></p>"+
+"<p>本事项涉及"+(c.cat==="生态环境"?"群众身边环境问题，存在重复投诉与舆情放大风险":"政策标准适用争议，存在复查复核纠错风险")+
+"，办理中须重点做好说理与释明，避免"+(c.cat==="生态环境"?"以「已监测达标」简单答复":"以「行为发生时标准」简单答复")+"引发二次信访。</p>"
+      };
+    }
+
+    if(key==="答复"){
+      var extra = state.tone==="加强说理"
+        ? "<p><b>四、事实认定与法律适用说明</b></p>"+
+          "<p>经调查，"+esc(c.fact)+"</p>"+
+          "<p>关于法律适用，本机关认为：信访人主张的权利基础与现行规定之间的关系，应以行为发生时有效的规范为准，同时兼顾后续政策调整的衔接安排。上述认定已履行调查核实、听取意见、集体会商程序，并有相应证据材料在卷。</p>"+
+          "<p><b>五、救济途径告知</b></p>"+
+          "<p>如您对本答复意见不服，可以自收到本答复意见书之日起 30 日内向本机关或者上一级机关申请复查；对复查意见不服的，可以自收到复查意见之日起 30 日内申请复核。</p>"
+        : "";
+      return {
+        title:"信访事项答复意见书",
+        no:serial+"·答",
+        body:
+"<p>"+esc(c.person)+"：</p>"+
+"<p>您于 "+d+" 反映的信访事项，本机关已办理完毕。现将办理情况答复如下：</p>"+
+"<p><b>一、信访人诉求</b></p><p>"+esc(c.claim)+"</p>"+
+"<p><b>二、调查核实情况</b></p><p>"+esc(c.fact)+"</p>"+
+"<p><b>三、处理意见</b></p>"+
+"<p>根据"+esc(lawStr)+"等规定，本机关处理意见如下："+
+(c.cat==="征地补偿"?"经复核，补偿核算应适用调整后的区片综合地价标准，由属地政府重新核定并补发差额；对适用标准存在争议的部分，由区级自然资源部门出具书面认定意见。"
+ :c.cat==="劳动社保"?"由市人力资源和社会保障局在 15 个工作日内完成工伤认定并出具结论；同步责令用人单位限期补缴社会保险费，补缴期间自实际用工之日起计算。"
+ :"由生态环境部门组织夜间专项监测（覆盖 22 时至次日 2 时），对超标排放企业依法立案查处并责令停产整治；监测数据与整改结果按规定向社会公开。")+"</p>"+
+extra+
+"<p>感谢您对信访工作的理解和支持。</p>"+
+"<p class='nid'>"+esc(state.org)+"<br>"+d+"</p>"
+      };
+    }
+
+    if(key==="送达"){
+      return {
+        title:"送达回证",
+        no:serial+"·送",
+        body:
+"<p><b>送达文书名称：</b>信访事项答复意见书（"+esc(serial)+"·答）</p>"+
+"<p><b>受送达人：</b>"+esc(c.person)+"</p>"+
+"<p><b>送达方式：</b>☑ 直接送达　☐ 留置送达　☐ 邮寄送达　☐ 电子送达</p>"+
+"<p><b>送达地点：</b>"+esc(c.city)+"（具体地址略）</p>"+
+"<p><b>送达时间：</b>2026 年 6 月 18 日 10 时 20 分</p>"+
+"<p><b>受送达人签收：</b>＿＿＿＿＿＿＿＿　　<b>送达人：</b>＿＿＿＿＿＿＿＿</p>"+
+"<p><b>备注：</b>已当场告知复查、复核期限及申请途径。</p>"+
+"<p class='nid'>"+esc(state.org)+"<br>2026 年 6 月 18 日</p>"
+      };
+    }
+
+    return {
+      title:"结案报告",
+      no:serial+"·结",
+      body:
+"<p><b>一、事项来源</b></p><p>"+esc(c.no)+"，信访人"+esc(c.person)+"，"+d+" 受理，"+state.mode+"办理。</p>"+
+"<p><b>二、办理经过</b></p><p>本机关按照《信访工作条例》规定，于受理后 5 个工作日内联系信访人并制作谈话记录，组织调查核实，形成处理意见，经合法性审核后于 2026 年 6 月 18 日书面答复并送达，信访人已签收。</p>"+
+"<p><b>三、办理结果</b></p><p>信访人诉求已"+(c.cat==="生态环境"?"推动落实夜间监测与专项整治":"按现行政策予以明确答复并落实整改")+"，答复意见已送达。经回访，信访人表示"+(c.cat==="生态环境"?"将继续关注整改效果":"已知悉政策依据")+"。</p>"+
+"<p><b>四、办理用时</b></p><p>受理至办结共 "+genRunningDays(c)+" 日，在法定 60 日期限内。</p>"+
+"<p><b>五、归档情况</b></p><p>全案材料 6 类 18 件，已按「一案一档」要求整理归档，卷宗号 "+esc(serial)+"-GD。</p>"+
+"<p class='nid'>承办人：＿＿＿　审核人：＿＿＿<br>"+esc(state.org)+"<br>2026 年 6 月 22 日</p>"
+    };
+  }
+
+  function renderDocList(){
+    $("docList").innerHTML = DOCS.map(function(d){
+      var on = d.k===state.activeDoc;
+      return '<div class="doc'+(on?" on":"")+'" data-k="'+d.k+'">'+
+        '<div class="ic">'+d.k+'</div><div class="nm">'+d.name+'</div>'+
+        '<div class="st">已生成</div></div>';
+    }).join("");
+    Array.prototype.forEach.call($("docList").querySelectorAll(".doc"),function(el){
+      el.onclick=function(){
+        state.activeDoc=el.getAttribute("data-k");
+        renderDocList(); renderPreview();
+      };
+    });
+  }
+
+  function renderPreview(){
+    var d=docText(state.activeDoc);
+    var html = '<div class="dh">'+d.title+'</div><div class="dno">'+d.no+'　（演示生成）</div>'+d.body;
+    if(state.checked && state.activeDoc==="答复"){
+      html = html.replace("8.6 万元","<span class='hl-err'>8.6 万元</span>");
+    }
+    $("preview").innerHTML = html;
+  }
+  function resetPreview(){
+    $("preview").innerHTML='<div class="dh">文 书 预 览</div><div class="dno">ZJ-XFJ-DEMO · 演示环境</div>'+
+      '<p style="text-indent:0;color:#6b7f96;text-align:center;font-family:\'PingFang SC\',sans-serif;font-size:12.5px;line-height:1.9">选择事项后点击「生成 6 类文书」，再在文书目录中点击查看。</p>';
+  }
+
+  /* ---------- 事件 ---------- */
+  $("btnGen").onclick=function(){
+    state.generated=true; state.activeDoc="受理";
+    state.org=$("selOrg").value;
+    renderDocList(); renderPreview();
+    $("genHint").textContent="已生成 6 类 · 18 件";
+    toast("已生成 6 类文书，耗时 3.8 秒（模拟）");
+  };
+
+  Array.prototype.forEach.call($("segMode").querySelectorAll("button"),function(b){
+    b.onclick=function(){
+      Array.prototype.forEach.call($("segMode").querySelectorAll("button"),function(x){x.classList.remove("on");});
+      b.classList.add("on"); state.mode=b.getAttribute("data-v");
+      if(state.generated){ renderDocList(); if(state.activeDoc==="转送"||state.activeDoc==="答复") renderPreview(); }
+    };
+  });
+  Array.prototype.forEach.call($("segTone").querySelectorAll("button"),function(b){
+    b.onclick=function(){
+      Array.prototype.forEach.call($("segTone").querySelectorAll("button"),function(x){x.classList.remove("on");});
+      b.classList.add("on"); state.tone=b.getAttribute("data-v");
+      if(state.generated && state.activeDoc==="答复") renderPreview();
+      if(state.generated) toast("已按「"+state.tone+"」重写答复意见书");
+    };
+  });
+  $("selType").onchange=function(){ if(state.generated) toast("已修正事项类别："+$("selType").value); };
+  $("selOrg").onchange=function(){ state.org=$("selOrg").value; if(state.generated) renderPreview(); };
+
+  $("btnCheck").onclick=function(){
+    if(!state.generated){ toast("请先生成文书"); return; }
+    state.checked=true;
+    var c=cur(), errs=c.errs;
+    var base = 96 - errs.length*7;
+    var score = Math.max(52, base);
+    $("scoreV").textContent=score+" 分";
+    $("scoreL").textContent = errs.length+" 项待整改 · 2 项通过";
+    $("scoreBar").style.width=score+"%";
+    $("scoreBar").style.background = score>=85?"var(--green)":(score>=70?"var(--amber)":"var(--red)");
+
+    var html = '<div class="chk ok"><div class="h">期限合规<span class="lv">通过</span></div>'+
+      '<div class="d">受理至办结 '+genRunningDays(c)+' 日，未超 60 日法定期限；延期程序未触发。</div></div>'+
+      '<div class="chk ok"><div class="h">要素完整性<span class="lv">通过</span></div>'+
+      '<div class="d">12 项登记要素齐全，承办单位、联系方式、诉求表述均已填写。</div></div>'+
+      errs.map(function(e,i){
+        return '<div class="chk err" data-i="'+i+'"><div class="h">'+esc(e.h)+
+          '<span class="lv">'+e.lv+'级</span></div><div class="d">'+esc(e.d)+'</div></div>';
+      }).join("");
+    $("checkList").innerHTML = html;
+    Array.prototype.forEach.call($("checkList").querySelectorAll(".chk.err"),function(el){
+      el.onclick=function(){
+        state.activeDoc="答复"; renderDocList(); renderPreview();
+        $("preview").scrollIntoView({behavior:"smooth",block:"center"});
+        toast("已定位到答复意见书相关字段");
+      };
+    });
+    if(state.activeDoc==="答复") renderPreview();
+    toast("校验完成：发现 "+errs.length+" 项待整改");
+  };
+
+  /* ---------- 导出 ---------- */
+  function docHtml(title, inner){
+    return '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">'+
+      '<head><meta charset="utf-8"><title>'+title+'</title>'+
+      '<style>@page{size:A4;margin:2.54cm 2.8cm}body{font-family:"仿宋_GB2312","FangSong",serif;font-size:16pt;line-height:1.75}'+
+      'h1{font-family:"方正小标宋简体","SimSun",serif;font-size:22pt;text-align:center;font-weight:normal;letter-spacing:4px;margin:0 0 6pt}'+
+      '.no{text-align:center;font-family:"仿宋_GB2312",serif;font-size:12pt;color:#555;margin-bottom:18pt}'+
+      'p{text-indent:2em;margin:0 0 8pt;text-align:justify}.nid{text-indent:0;text-align:right}.nid br{display:block}</style>'+
+      '</head><body>'+inner+'</body></html>';
+  }
+  function save(name, content){
+    var blob=new Blob(["\ufeff"+content],{type:"application/msword"});
+    var a=document.createElement("a");
+    a.href=URL.createObjectURL(blob); a.download=name;
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href); a.remove();},1500);
+  }
+  $("btnExportDoc").onclick=function(){
+    if(!state.generated){ toast("请先生成文书"); return; }
+    var d=docText(state.activeDoc);
+    save(d.title+"_"+cur().no+".doc", docHtml(d.title,'<h1>'+d.title+'</h1><div class="no">'+d.no+'</div>'+d.body));
+    toast("已导出："+d.title+".doc");
+  };
+  $("btnExportAll").onclick=function(){
+    if(!state.generated){ toast("请先生成文书"); return; }
+    var c=cur();
+    var inner='<h1>信访事项卷宗目录</h1><div class="no">'+c.no+'　「一案一档」</div>'+
+      '<p><b>信访人：</b>'+esc(c.person)+'　<b>事项类别：</b>'+c.cat+'　<b>承办单位：</b>'+esc(state.org)+'</p>'+
+      '<p><b>诉求：</b>'+esc(c.claim)+'</p>'+
+      '<p><b>卷内目录</b></p>'+
+      DOCS.map(function(d,i){
+        return '<p>'+(i+1)+'. '+d.name+'（'+c.no+'·'+d.k+'）　　页数：＿　备注：已生成</p>';
+      }).join("")+
+      '<p><b>归档说明：</b>本卷共 6 类 18 件，按《信访工作条例》与浙江省信访事项「一案一档」归档规范整理，纸质与电子双套保存。</p>'+
+      '<p class="nid">承办人：＿＿＿　档案员：＿＿＿<br>'+esc(state.org)+'<br>2026 年 6 月 22 日</p>';
+    save("信访事项卷宗目录_"+c.no+".doc", docHtml("信访事项卷宗目录", inner));
+    toast("已导出整套卷宗目录");
+  };
+
+  renderCases(); renderLaws();
+})();
+</script>
+</body>
+</html>
